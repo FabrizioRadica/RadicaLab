@@ -1,0 +1,2 @@
+# RadicaWanVideoGenerator
+Wan Video Generator
