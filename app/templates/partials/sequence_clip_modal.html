@@ -1,0 +1,111 @@
+<div class="modal-backdrop" id="clip-modal-backdrop">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <h2 id="clip-modal-title">Edit Clip</h2>
+      <button class="btn btn-icon" onclick="WVG.closeModal('clip-modal-backdrop')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="clip-edit-id">
+
+      <div class="field">
+        <label class="field-label">Clip type</label>
+        <div class="mode-switch" style="width:100%;">
+          <button type="button" class="mode-switch-btn" data-clip-type="prompt_only">Prompt Only (T2V)</button>
+          <button type="button" class="mode-switch-btn" data-clip-type="image_reference">Image Reference (I2V)</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="clip-name">Clip name</label>
+        <input type="text" id="clip-name" placeholder="Clip 01">
+      </div>
+
+      <div class="field" id="clip-image-field" style="display:none;">
+        <label class="field-label">Source image</label>
+        <div class="field-row" style="align-items:center;">
+          <img id="clip-image-preview" alt="" style="width:96px;height:64px;object-fit:cover;border-radius:8px;background:#0a0912;display:none;">
+          <label class="btn btn-sm">Upload image
+            <input type="file" id="clip-image-file" accept="image/*" hidden></label>
+          <span class="small muted" id="clip-image-name"></span>
+        </div>
+        <div class="field" style="margin-top:6px;max-width:180px;">
+          <label class="field-label" for="clip-image-fit">Fit</label>
+          <select id="clip-image-fit"><option value="contain">Contain</option><option value="cover">Cover</option></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="clip-prompt">Prompt</label>
+        <textarea id="clip-prompt" rows="2" placeholder="Describe this clip…"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label" for="clip-negative">Negative prompt <span class="muted">(optional, overrides global)</span></label>
+        <textarea id="clip-negative" rows="2"></textarea>
+      </div>
+
+      <label class="toggle" style="margin-bottom:8px;">
+        <input type="checkbox" id="clip-use-global" checked><span class="track"></span>
+        <span>Use global generation settings</span>
+      </label>
+
+      <details class="collapsible" id="clip-overrides">
+        <summary>Generation overrides</summary>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="clip-o-width">Width</label>
+            <input type="number" id="clip-o-width" min="16" max="8192" step="8" placeholder="global"></div>
+          <div class="field"><label class="field-label" for="clip-o-height">Height</label>
+            <input type="number" id="clip-o-height" min="16" max="8192" step="8" placeholder="global"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="clip-o-frames">Frames</label>
+            <input type="number" id="clip-o-frames" min="1" max="1000" placeholder="global"></div>
+          <div class="field"><label class="field-label" for="clip-o-fps">FPS</label>
+            <input type="number" id="clip-o-fps" min="1" max="120" placeholder="global"></div>
+          <div class="field"><label class="field-label" for="clip-o-steps">Steps</label>
+            <input type="number" id="clip-o-steps" min="1" max="200" placeholder="global"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="clip-o-cfg">CFG</label>
+            <input type="number" id="clip-o-cfg" min="0" max="30" step="0.1" placeholder="global"></div>
+          <div class="field"><label class="field-label" for="clip-o-seedmode">Seed mode</label>
+            <select id="clip-o-seedmode"><option value="">(global)</option><option value="random">Random</option><option value="fixed">Fixed</option></select></div>
+          <div class="field"><label class="field-label" for="clip-o-seed">Seed</label>
+            <input type="number" id="clip-o-seed" min="-1" placeholder="global"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-label" for="clip-o-sampler">Sampler</label>
+            <select id="clip-o-sampler"><option value="">(global)</option><option>euler</option><option>euler_ancestral</option><option>dpmpp_2m</option><option>uni_pc</option><option>ddim</option></select></div>
+          <div class="field"><label class="field-label" for="clip-o-scheduler">Scheduler</label>
+            <select id="clip-o-scheduler"><option value="">(global)</option><option>simple</option><option>normal</option><option>karras</option><option>beta</option></select></div>
+          <div class="field"><label class="field-label" for="clip-o-shift">MS shift</label>
+            <input type="number" id="clip-o-shift" min="0" max="100" step="0.1" placeholder="global"></div>
+        </div>
+      </details>
+
+      <details class="collapsible" id="clip-look">
+        <summary>Color &amp; Look</summary>
+        <div class="field">
+          <label class="field-label" for="clip-look-mode">Color &amp; Look</label>
+          <select id="clip-look-mode">
+            <option value="global">Global — use sequence Color &amp; Look</option>
+            <option value="custom">Custom — this clip only</option>
+            <option value="off">Off — no Color &amp; Look</option>
+          </select>
+        </div>
+        <div id="clip-look-editor"></div>
+      </details>
+
+      <details class="collapsible" id="clip-audio">
+        <summary>Clip Audio Tracks</summary>
+        <div class="small muted" style="margin-bottom:6px;">Ambience/SFX for this clip only — applied before merge.</div>
+        <div id="clip-audio-list"></div>
+        <label class="btn btn-sm" style="margin-top:6px;">＋ Add clip audio
+          <input type="file" id="clip-audio-file" accept="audio/*" hidden></label>
+      </details>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="WVG.closeModal('clip-modal-backdrop')">Close</button>
+      <button class="btn btn-primary" id="clip-save">Save Clip</button>
+    </div>
+  </div>
+</div>

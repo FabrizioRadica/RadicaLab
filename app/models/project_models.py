@@ -125,6 +125,9 @@ class ProjectCredits(BaseModel):
 class Project(BaseModel):
     schema_version: str = Field(default=WANPROJ_SCHEMA, alias="schema")
     id: str
+    # Distinguishes single-clip projects from video sequences (patchRC2 §12).
+    # Existing projects have no value and default to "single_clip".
+    project_type: str = "single_clip"
     name: str
     folder: str
     description: str = ""

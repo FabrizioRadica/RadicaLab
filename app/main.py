@@ -23,6 +23,7 @@ from app.routes import (
     library_routes,
     model_routes,
     project_routes,
+    sequence_routes,
     settings_routes,
     workflow_routes,
 )
@@ -53,6 +54,7 @@ app.mount("/static", StaticFiles(directory=str(settings.static_root)), name="sta
 app.include_router(home_routes.router)
 app.include_router(project_routes.router)
 app.include_router(generation_routes.router)
+app.include_router(sequence_routes.router)
 app.include_router(model_routes.router)
 app.include_router(workflow_routes.router)
 app.include_router(library_routes.router)

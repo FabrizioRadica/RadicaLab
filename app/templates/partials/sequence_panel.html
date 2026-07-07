@@ -1,0 +1,193 @@
+<div class="sequence-grid" id="sequence-root">
+
+  <!-- ============ Column 1: Sequence Settings ============ -->
+  <div class="editor-col">
+    <div class="panel" id="seq-settings-panel">
+      <div class="panel-header">
+        <h2>Sequence Settings</h2>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="seq-select">Sequence</label>
+        <div class="field-row" style="align-items:center;">
+          <select id="seq-select" style="flex:1;"></select>
+          <button class="btn btn-icon" id="seq-new" title="New sequence">＋</button>
+          <button class="btn btn-icon" id="seq-delete" title="Delete sequence">🗑</button>
+        </div>
+      </div>
+
+      <div id="seq-body" style="display:none;">
+        <div class="field">
+          <label class="field-label" for="seq-name">Sequence name</label>
+          <input type="text" id="seq-name" placeholder="Beach Short 001">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="seq-output-mode">Output mode</label>
+            <select id="seq-output-mode">
+              <option value="clips_only">Render clips only</option>
+              <option value="clips_and_merge">Render clips + final merge</option>
+              <option value="selected_only">Render selected clips only</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="seq-vram-mode">VRAM mode</label>
+            <select id="seq-vram-mode">
+              <option value="balanced">Balanced queue mode</option>
+              <option value="aggressive">Aggressive cleanup</option>
+              <option value="reload">Reload model every clip</option>
+            </select>
+          </div>
+        </div>
+        <label class="toggle" style="margin-bottom:10px;">
+          <input type="checkbox" id="seq-continue-on-error"><span class="track"></span>
+          <span>Continue on failed clip</span>
+        </label>
+
+        <details class="collapsible" id="seq-global-gen">
+          <summary>Global generation settings</summary>
+          <div class="field">
+            <label class="field-label" for="seq-g-model">Model</label>
+            <select id="seq-g-model"></select>
+          </div>
+          <div class="field-row">
+            <div class="field"><label class="field-label" for="seq-g-width">Width</label>
+              <input type="number" id="seq-g-width" min="16" max="8192" step="8"></div>
+            <div class="field"><label class="field-label" for="seq-g-height">Height</label>
+              <input type="number" id="seq-g-height" min="16" max="8192" step="8"></div>
+            <div class="field" style="max-width:120px;"><label class="field-label" for="seq-g-orientation">Orientation</label>
+              <select id="seq-g-orientation">
+                <option value="landscape">Landscape</option>
+                <option value="portrait">Portrait</option>
+                <option value="square">Square</option>
+              </select></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label class="field-label" for="seq-g-frames">Frames</label>
+              <input type="number" id="seq-g-frames" min="1" max="1000"></div>
+            <div class="field"><label class="field-label" for="seq-g-fps">FPS</label>
+              <input type="number" id="seq-g-fps" min="1" max="120"></div>
+            <div class="field"><label class="field-label" for="seq-g-steps">Steps</label>
+              <input type="number" id="seq-g-steps" min="1" max="200"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label class="field-label" for="seq-g-cfg">CFG</label>
+              <input type="number" id="seq-g-cfg" min="0" max="30" step="0.1"></div>
+            <div class="field"><label class="field-label" for="seq-g-sampler">Sampler</label>
+              <select id="seq-g-sampler">
+                <option>euler</option><option>euler_ancestral</option><option>heun</option>
+                <option>dpmpp_2m</option><option>dpmpp_sde</option><option>uni_pc</option><option>ddim</option>
+              </select></div>
+            <div class="field"><label class="field-label" for="seq-g-scheduler">Scheduler</label>
+              <select id="seq-g-scheduler">
+                <option>simple</option><option>normal</option><option>karras</option>
+                <option>exponential</option><option>beta</option>
+              </select></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label class="field-label" for="seq-g-denoise">Denoise</label>
+              <input type="number" id="seq-g-denoise" min="0" max="1" step="0.01"></div>
+            <div class="field"><label class="field-label" for="seq-g-seedmode">Seed mode</label>
+              <select id="seq-g-seedmode"><option value="random">Random</option><option value="fixed">Fixed</option></select></div>
+            <div class="field"><label class="field-label" for="seq-g-seed">Seed</label>
+              <input type="number" id="seq-g-seed" min="-1"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label class="field-label" for="seq-g-shift">ModelSamplingSD3 shift</label>
+              <input type="number" id="seq-g-shift" min="0" max="100" step="0.1"></div>
+            <div class="field" style="align-self:end;">
+              <label class="toggle"><input type="checkbox" id="seq-g-ms-enabled"><span class="track"></span>
+                <span>ModelSamplingSD3</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="seq-g-negative">Default negative prompt</label>
+            <textarea id="seq-g-negative" rows="2"></textarea>
+          </div>
+          <div class="field" style="display:flex;flex-direction:column;gap:6px;">
+            <label class="toggle"><input type="checkbox" id="seq-g-memopt"><span class="track"></span><span>Memory optimization</span></label>
+            <label class="toggle"><input type="checkbox" id="seq-g-offload"><span class="track"></span><span>Model offload</span></label>
+            <label class="toggle"><input type="checkbox" id="seq-g-unload"><span class="track"></span><span>Unload model after generation</span></label>
+          </div>
+        </details>
+
+        <details class="collapsible" id="seq-global-look">
+          <summary>Global Color &amp; Look</summary>
+          <div id="seq-global-look-editor"></div>
+        </details>
+
+        <details class="collapsible" id="seq-master-audio">
+          <summary>Sequence Audio Tracks</summary>
+          <div class="small muted" style="margin-bottom:6px;">Applied after final merge (music/voiceover over the whole sequence). Requires <strong>Render clips + final merge</strong>.</div>
+          <div id="seq-master-audio-list"></div>
+          <label class="btn btn-sm" style="margin-top:6px;">＋ Add sequence audio
+            <input type="file" id="seq-master-audio-file" accept="audio/*" hidden></label>
+        </details>
+
+        <div class="action-row" style="margin-top:12px;">
+          <button class="btn btn-primary btn-lg" id="seq-render" style="flex:100%;">▶ Render Queue</button>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-danger" id="seq-stop" style="flex:1;" disabled>⏹ Stop Queue</button>
+          <button class="btn" id="seq-resume" style="flex:1;">⏭ Resume</button>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-ghost btn-sm" id="seq-merge" title="Merge completed clips">⧉ Merge now</button>
+          <button class="btn btn-ghost btn-sm" id="seq-seq-audio" title="Apply sequence audio to merged video">♫ Apply sequence audio</button>
+        </div>
+        <div class="small muted" style="margin-top:6px;">Sequences auto-save after every change and every render stage.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Column 2: Video Sequence Queue ============ -->
+  <div class="editor-col" style="flex:1.4;">
+    <div class="panel" id="seq-queue-panel">
+      <div class="panel-header">
+        <h2>Video Sequence Queue</h2>
+        <span class="hint" id="seq-status-badge"></span>
+      </div>
+
+      <div id="seq-queue-empty" class="empty-state" style="padding:30px 10px;">
+        <div style="font-size:34px;">🎞</div>
+        <p class="muted">Create or select a sequence, then add clips.</p>
+      </div>
+
+      <div id="seq-queue-body" style="display:none;">
+        <div class="action-row">
+          <button class="btn" id="seq-add-image" style="flex:1;">＋ Image Reference clip</button>
+          <button class="btn" id="seq-add-prompt" style="flex:1;">＋ Prompt Only clip</button>
+        </div>
+
+        <div class="progress-wrap active" id="seq-progress-wrap" style="margin-top:12px;">
+          <div class="progress-bar"><div class="fill" id="seq-progress-fill" style="width:0%;"></div></div>
+          <div class="progress-label">
+            <span id="seq-progress-stage">Idle</span>
+            <span id="seq-progress-pct">0%</span>
+          </div>
+        </div>
+
+        <div id="seq-clip-list" class="seq-clip-list"></div>
+
+        <div class="panel-subtle" id="seq-final-output" style="display:none;margin-top:12px;">
+          <div class="subsection-title">Sequence output</div>
+          <video id="seq-final-video" controls playsinline preload="metadata"
+                 style="width:100%;border-radius:10px;background:#000;max-height:min(50vh,420px);"></video>
+          <div class="action-row" style="margin-top:8px;">
+            <a class="btn btn-sm" id="seq-final-download" download>⬇ Download final</a>
+            <a class="btn btn-sm btn-ghost" id="seq-merged-download" download>⬇ Download merged</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Column 3: Sequences library ============ -->
+  <div class="editor-col editor-col-library">
+    <div class="panel" id="seq-library-panel">
+      <div class="panel-header"><h2>Sequences</h2></div>
+      <div id="seq-library-list" class="seq-library-list"></div>
+    </div>
+  </div>
+</div>

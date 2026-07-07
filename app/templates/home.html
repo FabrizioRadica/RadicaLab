@@ -3,6 +3,14 @@
 {% set page_subtitle = current_project.name if current_project else "No project open — create one to start" %}
 
 {% block content %}
+<div class="mode-switch-bar">
+  <div class="mode-switch" role="tablist" aria-label="Workflow mode">
+    <button type="button" class="mode-switch-btn active" data-mode="single" role="tab">Single Clip</button>
+    <button type="button" class="mode-switch-btn" data-mode="sequence" role="tab">VideoSequenceQueue</button>
+  </div>
+</div>
+
+<div id="mode-single">
 {% if not current_project %}
 <div class="empty-state" style="max-width:560px;margin:60px auto;">
   <div style="font-size:40px;margin-bottom:10px;">🎬</div>
@@ -17,9 +25,9 @@
     {% include "partials/generation_params.html" %}
   </div>
   <div class="editor-col">
-  
+
 	<!-- DEBUG!!!! -->
-    <!-- {% include "partials/camera_motion_panel.html" %} --> 
+    <!-- {% include "partials/camera_motion_panel.html" %} -->
     {% if video_effects_enabled %}{% include "partials/video_effects_panel.html" %}{% endif %}
     {% if audio_tracks_enabled %}{% include "partials/audio_tracks_panel.html" %}{% endif %}
   </div>
@@ -35,8 +43,16 @@
 <script type="application/json" id="models-data">{{ models | tojson }}</script>
 <script type="application/json" id="camera-options">{{ camera_options | tojson }}</script>
 {% endif %}
+</div>
+
+<div id="mode-sequence" style="display:none;">
+  {% include "partials/sequence_panel.html" %}
+</div>
+
+<script type="application/json" id="seq-models-data">{{ models | tojson }}</script>
 
 {% include "partials/new_project_modal.html" %}
+{% include "partials/sequence_clip_modal.html" %}
 {% endblock %}
 
 {% block scripts %}
@@ -48,4 +64,5 @@
 <script src="/static/js/audio_tracks.js"></script>
 <script src="/static/js/video_effects.js"></script>
 {% endif %}
+<script src="/static/js/sequence.js"></script>
 {% endblock %}

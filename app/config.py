@@ -290,6 +290,19 @@ class Settings:
     comfyui_workflow_version: str = field(default_factory=lambda: _str("COMFYUI_WORKFLOW_VERSION", "wan_video_generator_v1"))
     comfyui_default_save_node: bool = field(default_factory=lambda: _bool("COMFYUI_DEFAULT_SAVE_NODE", True))
 
+    # --- VideoSequenceQueue (patchRC2 §20) -----------------------------------
+    sequence_default_vram_mode: str = field(default_factory=lambda: _str("SEQUENCE_DEFAULT_VRAM_MODE", "balanced").lower())
+    sequence_stop_on_clip_error: bool = field(default_factory=lambda: _bool("SEQUENCE_STOP_ON_CLIP_ERROR", True))
+    sequence_save_state_after_each_stage: bool = field(default_factory=lambda: _bool("SEQUENCE_SAVE_STATE_AFTER_EACH_STAGE", True))
+    sequence_keep_pipeline_warm: bool = field(default_factory=lambda: _bool("SEQUENCE_KEEP_PIPELINE_WARM", True))
+    sequence_clear_temp_vram_between_clips: bool = field(default_factory=lambda: _bool("SEQUENCE_CLEAR_TEMP_VRAM_BETWEEN_CLIPS", True))
+    sequence_unload_pipeline_on_oom: bool = field(default_factory=lambda: _bool("SEQUENCE_UNLOAD_PIPELINE_ON_OOM", True))
+    sequence_default_output_mode: str = field(default_factory=lambda: _str("SEQUENCE_DEFAULT_OUTPUT_MODE", "clips_only").lower())
+    sequence_enable_final_merge: bool = field(default_factory=lambda: _bool("SEQUENCE_ENABLE_FINAL_MERGE", True))
+    sequence_enable_sequence_audio: bool = field(default_factory=lambda: _bool("SEQUENCE_ENABLE_SEQUENCE_AUDIO", True))
+    # Reserved-VRAM threshold (MB) above which Aggressive mode unloads the pipeline.
+    sequence_aggressive_unload_reserved_mb: int = field(default_factory=lambda: _int("SEQUENCE_AGGRESSIVE_UNLOAD_RESERVED_MB", 6000))
+
     # Logging
     log_level: str = field(default_factory=lambda: _str("LOG_LEVEL", "INFO").upper())
     log_file: Path = field(default_factory=lambda: _path("LOG_FILE", "./logs/app.log"))
