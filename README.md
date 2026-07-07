@@ -12,7 +12,8 @@ WanVideoGenerator is a professional, self-hosted **Python / FastAPI** web applic
 
 The UI is fully server-rendered (Jinja2 + vanilla JavaScript) — no Node.js, no build step, no frontend framework. Everything runs on your machine; nothing is uploaded anywhere.
 
-![Screenshot](mockup01.png)
+<img width="1264" height="690" alt="Screenshot 2026-07-07 084827" src="https://github.com/user-attachments/assets/b6bfce1c-3372-4cb1-8fa7-f4515a021a2c" />
+
 
 ---
 
