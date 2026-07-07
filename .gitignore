@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+#project
+models/
+
+
 # Distribution / packaging
 .Python
 build/
@@ -151,6 +155,7 @@ activemq-data/
 .env
 .envrc
 .venv
+.claude
 env/
 venv/
 ENV/
