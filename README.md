@@ -1171,8 +1171,6 @@ Use it as you see fit, according to your technical skills and the limits of your
 
 By downloading, installing, or running this project, you declare that you have read, understood, and fully accepted this disclaimer.
 
-For a few selected cases, depending on my availability, I may offer direct support for installation and initial configuration.
-
 ---
 
 ## Credits
