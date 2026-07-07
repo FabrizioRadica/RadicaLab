@@ -58,15 +58,16 @@
 
         <details class="collapsible" id="seq-global-look">
           <summary>Global Color &amp; Look</summary>
-          <div id="seq-global-look-editor"></div>
+          <div class="small muted" style="margin-bottom:8px;">The same Color &amp; Look module used in Single Clip — applied to every clip unless a clip overrides it.</div>
+          {% set cl_context = "sequence_global" %}
+          {% include "partials/color_look.html" %}
         </details>
 
         <details class="collapsible" id="seq-master-audio">
           <summary>Sequence Audio Tracks</summary>
-          <div class="small muted" style="margin-bottom:6px;">Applied after final merge (music/voiceover over the whole sequence). Requires <strong>Render clips + final merge</strong>.</div>
-          <div id="seq-master-audio-list"></div>
-          <label class="btn btn-sm" style="margin-top:6px;">＋ Add sequence audio
-            <input type="file" id="seq-master-audio-file" accept="audio/*" hidden></label>
+          {% set at_context = "sequence_master" %}
+          {% set at_note = "Applied after final merge (music/voiceover over the whole sequence). Requires Render clips + final merge." %}
+          {% include "partials/audio_tracks_module.html" %}
         </details>
 
         <div class="action-row" style="margin-top:12px;">

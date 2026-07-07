@@ -96,6 +96,13 @@
     renderPending = true;
     requestAnimationFrame(function () {
       renderPending = false;
+      // Shared Color & Look pipeline (patchReuseColoAudio §5) — the same code
+      // path the sequence preview uses. Local fallback keeps Single Clip working
+      // if the shared module failed to load.
+      if (window.WVGColorLook && WVGColorLook.pipeline) {
+        WVGColorLook.pipeline.renderInto(ctx, canvas, baseFrame, fx);
+        return;
+      }
       var w = canvas.width, h = canvas.height;
       var out = new ImageData(new Uint8ClampedArray(baseFrame.data), w, h);
       if (fx.enabled) {

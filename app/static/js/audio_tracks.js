@@ -19,7 +19,13 @@
   /* ---------- rendering ---------- */
 
   function trackCard(t, idx) {
+    // Shared card markup (patchReuseColoAudio §8) — the same renderer the
+    // sequence audio contexts use. Local fallback keeps Single Clip working if
+    // the shared module failed to load.
     var url = "/media/projects/" + WVG.project.id + "/audio/" + encodeURIComponent(t.filename);
+    if (window.WVGAudioTracks && WVGAudioTracks.trackCardHTML) {
+      return WVGAudioTracks.trackCardHTML(t, idx, url);
+    }
     return '' +
       '<div class="audio-track' + (t.enabled ? "" : " disabled") + '" data-id="' + esc(t.id) + '">' +
       '  <div class="audio-track-head">' +

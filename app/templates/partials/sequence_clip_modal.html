@@ -65,15 +65,17 @@
             <option value="off">Off — no Color &amp; Look</option>
           </select>
         </div>
-        <div id="clip-look-editor"></div>
+        <div id="clip-look-custom-wrap">
+          {% set cl_context = "sequence_clip_override" %}
+          {% include "partials/color_look.html" %}
+        </div>
       </details>
 
       <details class="collapsible" id="clip-audio">
         <summary>Clip Audio Tracks</summary>
-        <div class="small muted" style="margin-bottom:6px;">Ambience/SFX for this clip only — applied before merge.</div>
-        <div id="clip-audio-list"></div>
-        <label class="btn btn-sm" style="margin-top:6px;">＋ Add clip audio
-          <input type="file" id="clip-audio-file" accept="audio/*" hidden></label>
+        {% set at_context = "sequence_clip" %}
+        {% set at_note = "Ambience/SFX for this clip only — applied before merge." %}
+        {% include "partials/audio_tracks_module.html" %}
       </details>
     </div>
     <div class="modal-footer">

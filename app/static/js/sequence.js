@@ -13,7 +13,13 @@ window.WVG = window.WVG || {};
     });
   }
 
-  var S = { seq: null, models: [], poll: null, editing: null, gpGlobal: null, gpClip: null };
+  var S = { seq: null, models: [], poll: null, editing: null, gpGlobal: null, gpClip: null,
+            clGlobal: null, clClip: null, audMaster: null, audClip: null };
+
+  function audioMediaUrl(t) {
+    return "/media/sequences/" + S.seq.sequence_id + "/asset/audio/" + encodeURIComponent(Path_basename(t.filename));
+  }
+  function Path_basename(p) { return String(p || "").split(/[\\/]/).pop(); }
 
   var STATUS_LABEL = {
     ready: "Ready", queued: "Queued", rendering: "Rendering…", completed: "Completed",
@@ -105,12 +111,61 @@ window.WVG = window.WVG || {};
     el("seq-vram-mode").value = s.vram_mode;
     el("seq-continue-on-error").checked = !!s.continue_on_error;
     renderGlobalGen();
-    buildLookEditor(el("seq-global-look-editor"), s.global_color_look, function (fx) {
-      S.seq.global_color_look = fx; saveSettings();
-    });
-    renderAudioList(el("seq-master-audio-list"), s.sequence_audio_tracks, null);
+    var look = ensureGlobalLook();
+    if (look) look.hydrate(s.global_color_look);
+    var mAudio = ensureMasterAudio();
+    if (mAudio) mAudio.hydrate(s.sequence_audio_tracks || []);
     renderClips();
     renderStatus(s.render_state, s);
+  }
+
+  /* Global Color & Look: the SAME shared module used by Single Clip, mounted in
+     the "sequence_global" context (patchReuseColoAudio §5/§6). */
+  function ensureGlobalLook() {
+    if (S.clGlobal) return S.clGlobal;
+    var root = document.querySelector('[data-color-look-context="sequence_global"]');
+    if (!root || !window.WVGColorLook) return null;
+    S.clGlobal = WVGColorLook.mount(root, {
+      context: "sequence_global",
+      state: S.seq.global_color_look,
+      onChange: function (fx) { S.seq.global_color_look = fx; saveSettings(); },
+      previewSource: firstClipPreviewSource,
+    });
+    return S.clGlobal;
+  }
+
+  function firstClipPreviewSource() {
+    var clip = (S.seq.clips || []).find(function (c) { return c.outputs && c.outputs.preview; });
+    if (!clip) return null;
+    return { url: "/media/sequences/" + S.seq.sequence_id + "/clip/" + clip.clip_id + "/preview",
+             label: "Frame from " + clip.name };
+  }
+
+  /* Sequence Audio Tracks: the SAME shared module, mounted in "sequence_master"
+     context — applied after final merge (patchReuseColoAudio §8/§9). */
+  function ensureMasterAudio() {
+    if (S.audMaster) return S.audMaster;
+    var root = document.querySelector('[data-audio-tracks-context="sequence_master"]');
+    if (!root || !window.WVGAudioTracks) return null;
+    S.audMaster = WVGAudioTracks.mount(root, {
+      context: "sequence_master",
+      getMediaUrl: audioMediaUrl,
+      onUpdate: function (id, patch) {
+        return WVG.api("/api/sequences/" + S.seq.sequence_id + "/audio/" + id, { method: "PUT", body: patch });
+      },
+      onRemove: function (id) {
+        return WVG.api("/api/sequences/" + S.seq.sequence_id + "/audio/" + id, { method: "DELETE" });
+      },
+      onUpload: function (file) {
+        var fd = new FormData(); fd.append("file", file);
+        return WVG.api("/api/sequences/" + S.seq.sequence_id + "/assets/audio", { method: "POST", body: fd });
+      },
+      reload: async function () {
+        S.seq = await WVG.api("/api/sequences/" + S.seq.sequence_id);
+        return S.seq.sequence_audio_tracks || [];
+      },
+    });
+    return S.audMaster;
   }
 
   /* Global Generation Parameters: the SAME shared module used by Single Clip,
@@ -291,15 +346,73 @@ window.WVG = window.WVG || {};
       el("clip-image-name").textContent = clip.source_image;
     } else { el("clip-image-preview").style.display = "none"; el("clip-image-name").textContent = ""; }
     el("clip-image-fit").value = clip.image_fit || "contain";
-    // look editor bound to a working copy
-    buildLookEditor(el("clip-look-editor"), clip.custom_color_look, function (fx) { S.editing.custom_color_look = fx; });
-    // audio list
-    renderAudioList(el("clip-audio-list"), clip.clip_audio_tracks, clip.clip_id);
+    // Custom Color & Look: the SAME shared module in "sequence_clip_override".
+    var look = ensureClipLook();
+    if (look) look.hydrate(clip.custom_color_look || WVGColorLook.defaults());
+    updateClipLookVisibility(el("clip-look-mode").value);
+    // Clip Audio Tracks: the SAME shared module in "sequence_clip".
+    var caud = ensureClipAudio();
+    if (caud) caud.hydrate(clip.clip_audio_tracks || []);
     // open requested section
     ["clip-overrides", "clip-look", "clip-audio"].forEach(function (d) {
       if (el(d)) el(d).open = (d === openSection);
     });
     WVG.openModal("clip-modal-backdrop");
+  }
+
+  function updateClipLookVisibility(mode) {
+    var wrap = el("clip-look-custom-wrap");
+    if (wrap) wrap.style.display = (mode === "custom") ? "" : "none";
+  }
+
+  /* Custom Color & Look editor for one clip (sequence_clip_override). */
+  function ensureClipLook() {
+    if (S.clClip) return S.clClip;
+    var root = document.querySelector('[data-color-look-context="sequence_clip_override"]');
+    if (!root || !window.WVGColorLook) return null;
+    S.clClip = WVGColorLook.mount(root, {
+      context: "sequence_clip_override",
+      state: WVGColorLook.defaults(),
+      onChange: function (fx) { S.editing.custom_color_look = fx; },  // collected on Save
+      previewSource: function () {
+        var cid = el("clip-edit-id").value;
+        var clip = (S.seq.clips || []).find(function (c) { return c.clip_id === cid; });
+        if (!clip || !clip.outputs || !clip.outputs.preview) return null;
+        return { url: "/media/sequences/" + S.seq.sequence_id + "/clip/" + clip.clip_id + "/preview",
+                 label: "Frame from " + clip.name };
+      },
+    });
+    return S.clClip;
+  }
+
+  /* Per-clip Audio Tracks editor (sequence_clip). */
+  function ensureClipAudio() {
+    if (S.audClip) return S.audClip;
+    var root = document.querySelector('[data-audio-tracks-context="sequence_clip"]');
+    if (!root || !window.WVGAudioTracks) return null;
+    S.audClip = WVGAudioTracks.mount(root, {
+      context: "sequence_clip",
+      getMediaUrl: audioMediaUrl,
+      onUpdate: function (id, patch) {
+        var body = Object.assign({ clip_id: el("clip-edit-id").value }, patch);
+        return WVG.api("/api/sequences/" + S.seq.sequence_id + "/audio/" + id, { method: "PUT", body: body });
+      },
+      onRemove: function (id) {
+        return WVG.api("/api/sequences/" + S.seq.sequence_id + "/audio/" + id +
+          "?clip_id=" + encodeURIComponent(el("clip-edit-id").value), { method: "DELETE" });
+      },
+      onUpload: function (file) {
+        var fd = new FormData(); fd.append("file", file); fd.append("clip_id", el("clip-edit-id").value);
+        return WVG.api("/api/sequences/" + S.seq.sequence_id + "/assets/audio", { method: "POST", body: fd });
+      },
+      reload: async function () {
+        var cid = el("clip-edit-id").value;
+        S.seq = await WVG.api("/api/sequences/" + S.seq.sequence_id);
+        var clip = S.seq.clips.find(function (c) { return c.clip_id === cid; });
+        return clip ? (clip.clip_audio_tracks || []) : [];
+      },
+    });
+    return S.audClip;
   }
 
   function setClipType(type) {
@@ -355,7 +468,7 @@ window.WVG = window.WVG || {};
       image_fit: el("clip-image-fit").value,
       use_global_generation_settings: useGlobal,
       color_look_mode: el("clip-look-mode").value,
-      custom_color_look: S.editing.custom_color_look,
+      custom_color_look: (S.clClip ? S.clClip.getState() : S.editing.custom_color_look),
       source_image: S.editing.source_image || null,
       generation_overrides: overrides,
     };
@@ -366,110 +479,8 @@ window.WVG = window.WVG || {};
     } catch (e) { WVG.toast("Could not save clip", "error", e.message); }
   }
 
-  /* ---------------- compact Color & Look editor (reuses VideoEffects shape) ---------------- */
-  var LOOK_SLIDERS = [
-    ["saturation", "Saturation", 0, 2, 0.01, 1],
-    ["contrast", "Contrast", 0, 2, 0.01, 1],
-    ["brightness", "Brightness", -100, 100, 1, 0],
-    ["gamma", "Gamma", 0.1, 3, 0.01, 1],
-    ["hue", "Hue", -180, 180, 1, 0],
-    ["temperature", "Temperature", -100, 100, 1, 0],
-  ];
-  var LOOK_TOGGLES = ["vignette", "film_grain", "sharpness", "vhs_effect"];
-
-  function buildLookEditor(container, fx, onChange) {
-    fx = JSON.parse(JSON.stringify(fx || {}));
-    var html = "<label class='toggle' style='margin:6px 0;'><input type='checkbox' class='lk-enabled'" +
-      (fx.enabled ? " checked" : "") + "><span class='track'></span><span>Enable Color &amp; Look</span></label>";
-    LOOK_SLIDERS.forEach(function (s) {
-      var v = (fx[s[0]] == null ? s[5] : fx[s[0]]);
-      html += "<div class='field'><label class='field-label'>" + s[1] + " <span class='lk-val' data-for='" + s[0] + "'>" + v + "</span></label>" +
-        "<input type='range' class='lk-slider' data-key='" + s[0] + "' min='" + s[2] + "' max='" + s[3] + "' step='" + s[4] + "' value='" + v + "'></div>";
-    });
-    html += "<div class='small muted' style='margin:6px 0 4px;'>Effect layers</div><div style='display:flex;flex-wrap:wrap;gap:10px;'>";
-    LOOK_TOGGLES.forEach(function (k) {
-      var on = fx[k] && fx[k].enabled;
-      html += "<label class='toggle'><input type='checkbox' class='lk-fxtoggle' data-key='" + k + "'" + (on ? " checked" : "") +
-        "><span class='track'></span><span>" + k.replace("_", " ") + "</span></label>";
-    });
-    html += "</div>";
-    container.innerHTML = html;
-
-    function collect() {
-      var out = { enabled: container.querySelector(".lk-enabled").checked };
-      container.querySelectorAll(".lk-slider").forEach(function (sl) { out[sl.dataset.key] = parseFloat(sl.value); });
-      container.querySelectorAll(".lk-fxtoggle").forEach(function (t) {
-        var base = (fx[t.dataset.key] && typeof fx[t.dataset.key] === "object") ? fx[t.dataset.key] : {};
-        out[t.dataset.key] = Object.assign({}, base, { enabled: t.checked });
-      });
-      fx = Object.assign(fx, out);
-      return fx;
-    }
-    container.addEventListener("input", function (e) {
-      if (e.target.classList.contains("lk-slider")) {
-        var lbl = container.querySelector(".lk-val[data-for='" + e.target.dataset.key + "']");
-        if (lbl) lbl.textContent = e.target.value;
-      }
-      if (onChange) onChange(collect());
-    });
-    container.addEventListener("change", function () { if (onChange) onChange(collect()); });
-  }
-
-  /* ---------------- audio track editor (reuses AudioTrack shape) ---------------- */
-  function renderAudioList(container, tracks, clipId) {
-    tracks = tracks || [];
-    if (!tracks.length) { container.innerHTML = "<p class='muted small'>No tracks.</p>"; return; }
-    container.innerHTML = tracks.map(function (t) {
-      return "<div class='seq-audio-row' data-track='" + t.id + "'>" +
-        "<div class='seq-audio-name'>" + esc(t.original_filename || t.filename) + "</div>" +
-        "<label class='toggle'><input type='checkbox' class='at-enabled'" + (t.enabled ? " checked" : "") + "><span class='track'></span><span>On</span></label>" +
-        "<label class='small'>Vol <input type='number' class='at-f' data-k='volume' value='" + t.volume + "' min='0' max='2' step='0.05' style='width:60px;'></label>" +
-        "<label class='small'>Start <input type='number' class='at-f' data-k='start_time' value='" + t.start_time + "' min='0' step='0.1' style='width:60px;'></label>" +
-        "<label class='small'>In <input type='number' class='at-f' data-k='fade_in' value='" + t.fade_in + "' min='0' step='0.1' style='width:52px;'></label>" +
-        "<label class='small'>Out <input type='number' class='at-f' data-k='fade_out' value='" + t.fade_out + "' min='0' step='0.1' style='width:52px;'></label>" +
-        "<label class='toggle'><input type='checkbox' class='at-b' data-k='loop'" + (t.loop ? " checked" : "") + "><span class='track'></span><span>Loop</span></label>" +
-        "<label class='toggle'><input type='checkbox' class='at-b' data-k='trim_to_video'" + (t.trim_to_video ? " checked" : "") + "><span class='track'></span><span>Trim</span></label>" +
-        "<button class='btn btn-xs btn-danger at-del'>✕</button>" +
-        "</div>";
-    }).join("");
-    container.querySelectorAll(".seq-audio-row").forEach(function (row) {
-      var tid = row.dataset.track;
-      function push() {
-        var body = { clip_id: clipId || undefined, enabled: row.querySelector(".at-enabled").checked };
-        row.querySelectorAll(".at-f").forEach(function (i) { body[i.dataset.k] = parseFloat(i.value); });
-        row.querySelectorAll(".at-b").forEach(function (i) { body[i.dataset.k] = i.checked; });
-        WVG.api("/api/sequences/" + S.seq.sequence_id + "/audio/" + tid, { method: "PUT", body: body })
-          .catch(function (e) { WVG.toast("Track update failed", "error", e.message); });
-      }
-      row.querySelectorAll("input").forEach(function (i) { i.addEventListener("change", push); });
-      row.querySelector(".at-del").addEventListener("click", async function () {
-        try {
-          var url = "/api/sequences/" + S.seq.sequence_id + "/audio/" + tid + (clipId ? "?clip_id=" + clipId : "");
-          await WVG.api(url, { method: "DELETE" });
-          await refreshKeepModal(clipId);
-        } catch (e) { WVG.toast("Delete failed", "error", e.message); }
-      });
-    });
-  }
-
-  async function refreshKeepModal(clipId) {
-    await selectSequence(S.seq.sequence_id);
-    if (clipId) {
-      var clip = S.seq.clips.find(function (c) { return c.clip_id === clipId; });
-      if (clip) renderAudioList(el("clip-audio-list"), clip.clip_audio_tracks, clipId);
-    }
-  }
-
-  async function uploadAudio(fileInput, clipId) {
-    var f = fileInput.files[0]; if (!f) return;
-    var fd = new FormData(); fd.append("file", f); if (clipId) fd.append("clip_id", clipId);
-    try {
-      await WVG.api("/api/sequences/" + S.seq.sequence_id + "/assets/audio", { method: "POST", body: fd });
-      fileInput.value = "";
-      await refreshKeepModal(clipId);
-      WVG.toast("Audio added", "success");
-    } catch (e) { WVG.toast("Audio upload failed", "error", e.message); }
-  }
+  /* Color & Look and Audio Tracks are now the shared context-aware modules
+     (WVGColorLook / WVGAudioTracks) mounted above — no sequence-only clones. */
 
   /* ---------------- render controls + polling ---------------- */
   function renderStatus(rs, s) {
@@ -577,6 +588,10 @@ window.WVG = window.WVG || {};
     if (useGlobal) useGlobal.addEventListener("change", function () {
       updateClipOverrideVisibility(this.checked);
     });
+    var lookMode = el("clip-look-mode");
+    if (lookMode) lookMode.addEventListener("change", function () {
+      updateClipLookVisibility(this.value);
+    });
 
     el("seq-add-image").addEventListener("click", function () { addClip("image_reference"); });
     el("seq-add-prompt").addEventListener("click", function () { addClip("prompt_only"); });
@@ -598,8 +613,8 @@ window.WVG = window.WVG || {};
       catch (e) { WVG.toast("Sequence audio failed", "error", e.message); }
     });
 
-    el("seq-master-audio-file").addEventListener("change", function () { uploadAudio(this, null); });
-    el("clip-audio-file").addEventListener("change", function () { uploadAudio(this, el("clip-edit-id").value); });
+    // Sequence-master and clip audio uploads are handled inside the reused
+    // WVGAudioTracks modules (add-track button + scoped file input).
     el("clip-save").addEventListener("click", saveClip);
     document.querySelectorAll("#clip-modal-backdrop [data-clip-type]").forEach(function (b) {
       b.addEventListener("click", function () { setClipType(b.dataset.clipType); });

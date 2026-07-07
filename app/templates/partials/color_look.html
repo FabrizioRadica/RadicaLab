@@ -1,0 +1,65 @@
+{#
+  Shared, context-aware Color & Look module (patchReuseColoAudio §5/§6/§15).
+  Single Clip keeps its own video_effects_panel.html; this partial powers the
+  VideoSequenceQueue Global and per-clip Custom looks:
+      cl_context = "sequence_global"          → sequence Global Color & Look
+      cl_context = "sequence_clip_override"   → per-clip Custom look
+  No global element IDs — every control uses data-path / data-field and is reached
+  through a root-scoped querySelector. Bound by static/js/modules/color_look.js.
+#}
+<section class="color-look-module vfx-controls" data-color-look-context="{{ cl_context }}">
+  <div class="field" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <span class="small muted">Applied after generation — the raw clip is never modified.</span>
+    <label class="toggle" title="Master switch — effects are applied only during post-processing">
+      <input type="checkbox" data-field="enabled"><span class="track"></span><span>Enable</span>
+    </label>
+  </div>
+
+  <div class="vfx-preview-wrap">
+    <canvas data-role="preview" width="320" height="180"></canvas>
+    <div class="small muted" data-role="caption" style="margin-top:4px;">Preview only — applied during post-processing</div>
+  </div>
+
+  <details class="collapsible" open>
+    <summary>Basic Color</summary>
+    <div class="cl-slider vfx-slider" data-path="saturation"><span>Saturation</span><input type="range" min="0" max="2" step="0.05" value="1"><b>1.00</b></div>
+    <div class="cl-slider vfx-slider" data-path="contrast"><span>Contrast</span><input type="range" min="0" max="2" step="0.05" value="1"><b>1.00</b></div>
+    <div class="cl-slider vfx-slider" data-path="hue"><span>Hue</span><input type="range" min="-180" max="180" step="1" value="0"><b>0°</b></div>
+    <div class="cl-slider vfx-slider" data-path="temperature"><span>Temperature</span><input type="range" min="-100" max="100" step="1" value="0"><b>0</b></div>
+    <div class="cl-slider vfx-slider" data-path="shadows"><span>Shadows</span><input type="range" min="-100" max="100" step="1" value="0"><b>0</b></div>
+    <div class="cl-slider vfx-slider" data-path="highlights"><span>Highlights</span><input type="range" min="-100" max="100" step="1" value="0"><b>0</b></div>
+    <div class="cl-slider vfx-slider" data-path="brightness"><span>Brightness</span><input type="range" min="-100" max="100" step="1" value="0"><b>0</b></div>
+    <div class="cl-slider vfx-slider" data-path="gamma"><span>Gamma</span><input type="range" min="0.1" max="3" step="0.05" value="1"><b>1.00</b></div>
+  </details>
+
+  <details class="collapsible">
+    <summary><label class="toggle vfx-sec-toggle"><input type="checkbox" data-field="vignette.enabled"><span class="track"></span></label> Vignette</summary>
+    <div class="cl-slider vfx-slider" data-path="vignette.intensity"><span>Intensity</span><input type="range" min="0" max="1" step="0.05" value="0.25"><b>0.25</b></div>
+    <div class="cl-slider vfx-slider" data-path="vignette.radius"><span>Radius</span><input type="range" min="0" max="1" step="0.05" value="0.75"><b>0.75</b></div>
+    <div class="cl-slider vfx-slider" data-path="vignette.softness"><span>Softness</span><input type="range" min="0" max="1" step="0.05" value="0.5"><b>0.50</b></div>
+  </details>
+
+  <details class="collapsible">
+    <summary><label class="toggle vfx-sec-toggle"><input type="checkbox" data-field="film_grain.enabled"><span class="track"></span></label> Film Grain</summary>
+    <div class="cl-slider vfx-slider" data-path="film_grain.intensity"><span>Intensity</span><input type="range" min="0" max="1" step="0.05" value="0.15"><b>0.15</b></div>
+    <div class="cl-slider vfx-slider" data-path="film_grain.grain_size"><span>Grain Size</span><input type="range" min="0" max="1" step="0.05" value="0.5"><b>0.50</b></div>
+    <label class="toggle" style="margin:4px 0 2px;"><input type="checkbox" data-field="film_grain.animated" checked><span class="track"></span><span>Animated grain</span></label>
+  </details>
+
+  <details class="collapsible">
+    <summary><label class="toggle vfx-sec-toggle"><input type="checkbox" data-field="sharpness.enabled"><span class="track"></span></label> Sharpness</summary>
+    <div class="cl-slider vfx-slider" data-path="sharpness.amount"><span>Amount</span><input type="range" min="0" max="2" step="0.05" value="1"><b>1.00</b></div>
+  </details>
+
+  <details class="collapsible">
+    <summary><label class="toggle vfx-sec-toggle"><input type="checkbox" data-field="vhs_effect.enabled"><span class="track"></span></label> VHS Effect</summary>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.intensity"><span>Intensity</span><input type="range" min="0" max="1" step="0.05" value="0.3"><b>0.30</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.scanlines"><span>Scanlines</span><input type="range" min="0" max="1" step="0.05" value="0.2"><b>0.20</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.chromatic_aberration"><span>Chromatic Aberr.</span><input type="range" min="0" max="1" step="0.05" value="0.15"><b>0.15</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.noise"><span>Noise</span><input type="range" min="0" max="1" step="0.05" value="0.15"><b>0.15</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.jitter"><span>Jitter</span><input type="range" min="0" max="1" step="0.05" value="0.1"><b>0.10</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.tracking_distortion"><span>Tracking Dist.</span><input type="range" min="0" max="1" step="0.05" value="0.1"><b>0.10</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.color_bleeding"><span>Color Bleeding</span><input type="range" min="0" max="1" step="0.05" value="0.15"><b>0.15</b></div>
+    <div class="cl-slider vfx-slider" data-path="vhs_effect.tape_damage"><span>Tape Damage</span><input type="range" min="0" max="1" step="0.05" value="0.05"><b>0.05</b></div>
+  </details>
+</section>
