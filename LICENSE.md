@@ -1,7 +1,7 @@
 # License
 
 Radica - WanVideoGenerator  
-Concept & Design: Fabrizio Radica  
+Concept & Design: Fabrizio Radica 2026
 Project by RadicaDesign
 
 This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.

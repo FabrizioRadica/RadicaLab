@@ -1,0 +1,52 @@
+{
+  "application": "Radica - WanVideoGenerator",
+  "credits": {
+    "concept_and_design": "Fabrizio Radica",
+    "project_by": "RadicaDesign"
+  },
+  "sequence_id": "fcb27dc1d601",
+  "sequence_name": "Test 01",
+  "clip_id": "57da1447fc",
+  "clip_index": 0,
+  "clip_name": "Clip 01",
+  "type": "image_reference",
+  "prompt": "jump on the water",
+  "negative_prompt": "chaotic dance, everyone dancing, fast movement, aggressive movement, complex choreography, full crowd animation, random body motion, fast arm waving, jumping, spinning, running, camera shake, handheld shake, fast zoom, fast pan, flashing lights, strobing lights, flicker, morphing faces, changing faces, melting faces, distorted face, ugly face, deformed eyes, broken mouth, twisted neck, broken anatomy, extra arms, extra hands, missing arms, missing hands, extra fingers, missing fingers, twisted fingers, fused fingers, long arms, rubber arms, broken shoulders, twisted torso, warped body, duplicated people, duplicated faces, people merging together, body merging, unstable clothing, modern clothes, futuristic club, blurry foreground, low quality, artifacts",
+  "status": "completed",
+  "seed": 836260114,
+  "outputs": {
+    "raw": "Test_01_clip_001_raw.mp4",
+    "fx": null,
+    "final": "Test_01_clip_001_final.mp4",
+    "preview": "Test_01_clip_001_raw.jpg",
+    "archived": []
+  },
+  "diagnostics": {
+    "effective_settings": {
+      "resolution": "352x640",
+      "frames": 81,
+      "fps": 16,
+      "steps": 32,
+      "guidance_scale": 4.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "seed": 836260114,
+      "mode": "image2video",
+      "model_id": "wan2.2_ti2v_5B_fp16.safetensors",
+      "model_sampling": {
+        "enabled": true,
+        "type": "sd3",
+        "shift": 8.0
+      }
+    },
+    "color_look_mode": "global",
+    "clip_audio_tracks": [],
+    "timings": {
+      "render_seconds": 327.4
+    },
+    "backend": "wan",
+    "is_mock": false
+  },
+  "written_at": "2026-07-07T14:05:12.966480+00:00"
+}

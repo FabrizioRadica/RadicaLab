@@ -89,12 +89,15 @@ class GlobalGenerationSettings(BaseModel):
     denoise: float = Field(default=1.0, ge=0.0, le=1.0)
     seed_mode: str = "random"  # random | fixed
     seed: int = Field(default=-1, ge=-1)
+    # ComfyUI-compatible seed control, shared with Single Clip (patchSeq §16).
+    control_after_generate: str = "fixed"
     model_sampling_enabled: bool = True
     model_sampling_shift: float = Field(default=8.0, ge=0.0, le=100.0)
     precision: str = "bf16"
     device: str = "cuda"
     memory_optimization: bool = True
     model_offload: bool = False
+    save_intermediate_frames: bool = False
     unload_model_after_generation: bool = False
 
 

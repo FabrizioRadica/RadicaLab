@@ -46,83 +46,28 @@
         </label>
 
         <details class="collapsible" id="seq-global-gen">
-          <summary>Global generation settings</summary>
-          <div class="field">
-            <label class="field-label" for="seq-g-model">Model</label>
-            <select id="seq-g-model"></select>
-          </div>
-          <div class="field-row">
-            <div class="field"><label class="field-label" for="seq-g-width">Width</label>
-              <input type="number" id="seq-g-width" min="16" max="8192" step="8"></div>
-            <div class="field"><label class="field-label" for="seq-g-height">Height</label>
-              <input type="number" id="seq-g-height" min="16" max="8192" step="8"></div>
-            <div class="field" style="max-width:120px;"><label class="field-label" for="seq-g-orientation">Orientation</label>
-              <select id="seq-g-orientation">
-                <option value="landscape">Landscape</option>
-                <option value="portrait">Portrait</option>
-                <option value="square">Square</option>
-              </select></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label class="field-label" for="seq-g-frames">Frames</label>
-              <input type="number" id="seq-g-frames" min="1" max="1000"></div>
-            <div class="field"><label class="field-label" for="seq-g-fps">FPS</label>
-              <input type="number" id="seq-g-fps" min="1" max="120"></div>
-            <div class="field"><label class="field-label" for="seq-g-steps">Steps</label>
-              <input type="number" id="seq-g-steps" min="1" max="200"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label class="field-label" for="seq-g-cfg">CFG</label>
-              <input type="number" id="seq-g-cfg" min="0" max="30" step="0.1"></div>
-            <div class="field"><label class="field-label" for="seq-g-sampler">Sampler</label>
-              <select id="seq-g-sampler">
-                <option>euler</option><option>euler_ancestral</option><option>heun</option>
-                <option>dpmpp_2m</option><option>dpmpp_sde</option><option>uni_pc</option><option>ddim</option>
-              </select></div>
-            <div class="field"><label class="field-label" for="seq-g-scheduler">Scheduler</label>
-              <select id="seq-g-scheduler">
-                <option>simple</option><option>normal</option><option>karras</option>
-                <option>exponential</option><option>beta</option>
-              </select></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label class="field-label" for="seq-g-denoise">Denoise</label>
-              <input type="number" id="seq-g-denoise" min="0" max="1" step="0.01"></div>
-            <div class="field"><label class="field-label" for="seq-g-seedmode">Seed mode</label>
-              <select id="seq-g-seedmode"><option value="random">Random</option><option value="fixed">Fixed</option></select></div>
-            <div class="field"><label class="field-label" for="seq-g-seed">Seed</label>
-              <input type="number" id="seq-g-seed" min="-1"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label class="field-label" for="seq-g-shift">ModelSamplingSD3 shift</label>
-              <input type="number" id="seq-g-shift" min="0" max="100" step="0.1"></div>
-            <div class="field" style="align-self:end;">
-              <label class="toggle"><input type="checkbox" id="seq-g-ms-enabled"><span class="track"></span>
-                <span>ModelSamplingSD3</span></label>
-            </div>
-          </div>
-          <div class="field">
+          <summary>Global Generation Parameters</summary>
+          <div class="small muted" style="margin-bottom:8px;">The same Generation Parameters module used in Single Clip — applied to every clip unless a clip overrides it.</div>
+          {% set gp_context = "sequence_global" %}
+          {% include "partials/generation_parameters.html" %}
+          <div class="field" style="margin-top:10px;">
             <label class="field-label" for="seq-g-negative">Default negative prompt</label>
             <textarea id="seq-g-negative" rows="2"></textarea>
-          </div>
-          <div class="field" style="display:flex;flex-direction:column;gap:6px;">
-            <label class="toggle"><input type="checkbox" id="seq-g-memopt"><span class="track"></span><span>Memory optimization</span></label>
-            <label class="toggle"><input type="checkbox" id="seq-g-offload"><span class="track"></span><span>Model offload</span></label>
-            <label class="toggle"><input type="checkbox" id="seq-g-unload"><span class="track"></span><span>Unload model after generation</span></label>
           </div>
         </details>
 
         <details class="collapsible" id="seq-global-look">
           <summary>Global Color &amp; Look</summary>
-          <div id="seq-global-look-editor"></div>
+          <div class="small muted" style="margin-bottom:8px;">The same Color &amp; Look module used in Single Clip — applied to every clip unless a clip overrides it.</div>
+          {% set cl_context = "sequence_global" %}
+          {% include "partials/color_look.html" %}
         </details>
 
         <details class="collapsible" id="seq-master-audio">
           <summary>Sequence Audio Tracks</summary>
-          <div class="small muted" style="margin-bottom:6px;">Applied after final merge (music/voiceover over the whole sequence). Requires <strong>Render clips + final merge</strong>.</div>
-          <div id="seq-master-audio-list"></div>
-          <label class="btn btn-sm" style="margin-top:6px;">＋ Add sequence audio
-            <input type="file" id="seq-master-audio-file" accept="audio/*" hidden></label>
+          {% set at_context = "sequence_master" %}
+          {% set at_note = "Applied after final merge (music/voiceover over the whole sequence). Requires Render clips + final merge." %}
+          {% include "partials/audio_tracks_module.html" %}
         </details>
 
         <div class="action-row" style="margin-top:12px;">

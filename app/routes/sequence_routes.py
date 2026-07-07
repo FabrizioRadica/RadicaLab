@@ -394,3 +394,18 @@ async def serve_sequence_image(sequence_id: str, filename: str):
     if not path.exists():
         raise HTTPException(status_code=404, detail="Image not found.")
     return FileResponse(path, media_type=media_service.content_type_for(path))
+
+
+@router.get("/media/sequences/{sequence_id}/asset/audio/{filename}")
+async def serve_sequence_audio(sequence_id: str, filename: str):
+    """Serve an uploaded sequence audio asset so the reused Audio Tracks module's
+    preview player works in the sequence_master / sequence_clip contexts."""
+    filename = _safe_name(filename)
+    try:
+        seq = sequence_service.load_sequence(sequence_id)
+    except SequenceError as exc:
+        raise _err(exc)
+    path = sequence_service.assets_audio_dir(seq) / filename
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Audio not found.")
+    return FileResponse(path, media_type=media_service.content_type_for(path))

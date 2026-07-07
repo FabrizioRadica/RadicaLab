@@ -1,0 +1,323 @@
+{
+  "schema": "video_sequence/1",
+  "sequence_id": "fcb27dc1d601",
+  "project_type": "video_sequence",
+  "name": "Test 01",
+  "folder": "Test_01",
+  "description": "",
+  "created_at": "2026-07-07T13:56:56.426143+00:00",
+  "updated_at": "2026-07-07T14:09:15.710006+00:00",
+  "global_generation_settings": {
+    "model_id": "wan2.2_ti2v_5B_fp16.safetensors",
+    "negative_prompt": "",
+    "wan_preset": "wan22_5b_safe_quality",
+    "orientation": "portrait",
+    "width": 352,
+    "height": 640,
+    "frames": 81,
+    "fps": 16,
+    "steps": 32,
+    "guidance_scale": 4.0,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1.0,
+    "seed_mode": "random",
+    "seed": -1,
+    "control_after_generate": "fixed",
+    "model_sampling_enabled": true,
+    "model_sampling_shift": 8.0,
+    "precision": "bf16",
+    "device": "cuda",
+    "memory_optimization": true,
+    "model_offload": false,
+    "save_intermediate_frames": false,
+    "unload_model_after_generation": false
+  },
+  "global_color_look": {
+    "enabled": false,
+    "saturation": 1.0,
+    "contrast": 1.0,
+    "hue": 0.0,
+    "temperature": 0.0,
+    "shadows": 0.0,
+    "highlights": 0.0,
+    "brightness": 0.0,
+    "gamma": 1.0,
+    "vignette": {
+      "enabled": false,
+      "intensity": 0.25,
+      "radius": 0.75,
+      "softness": 0.5
+    },
+    "film_grain": {
+      "enabled": false,
+      "intensity": 0.15,
+      "grain_size": 0.5,
+      "animated": true
+    },
+    "sharpness": {
+      "enabled": false,
+      "amount": 1.0
+    },
+    "vhs_effect": {
+      "enabled": false,
+      "intensity": 0.3,
+      "scanlines": 0.2,
+      "chromatic_aberration": 0.15,
+      "noise": 0.15,
+      "jitter": 0.1,
+      "tracking_distortion": 0.1,
+      "color_bleeding": 0.15,
+      "tape_damage": 0.05
+    }
+  },
+  "sequence_audio_tracks": [],
+  "output_mode": "clips_only",
+  "vram_mode": "balanced",
+  "continue_on_error": false,
+  "clips": [
+    {
+      "clip_id": "57da1447fc",
+      "index": 0,
+      "name": "Clip 01",
+      "type": "image_reference",
+      "status": "rendering",
+      "source_image": "d7af7f68-a4cc-4c64-8ddd-3c09682a214c.png",
+      "image_fit": "contain",
+      "prompt": "Maintain the exact same face for the entire video.\n\nThe model must keep identical facial identity in every frame: same face shape, same eyes, same eye distance, same eyebrows, same nose, same lips, same mouth shape, same jawline, same cheekbones, same forehead, same skin texture and same facial proportions.\n\nDo not change her facial features during the animation. Her face must remain perfectly consistent from the first frame to the last frame.\n\nKeep the same expression throughout the shot: calm, elegant, slightly soft and natural expression. No exaggerated smile, no sudden emotional change, no different facial expression.\n\nThe mouth and lips must remain consistent: same lip shape, same lip volume, same mouth size, same closed relaxed mouth. Do not open the mouth, do not change the lips, do not alter the smile.\n\nThe eyebrows must remain identical: same shape, same thickness, same position, same expression. No eyebrow morphing, no asymmetry, no changing eyebrow angle.\n\nThe nose must remain identical: same shape, same size, same bridge, same tip, same nostrils. No nose morphing or facial structure changes.\n\nPreserve identity lock, facial consistency, temporal face coherence, stable facial features, same person, same model, same face, same expression, same lips, same nose, same eyebrows, same mouth.\n\nUse the reference image as strict identity reference. The face in the video must match the reference image exactly. Preserve the same facial proportions, expression, lips, nose, eyebrows, eyes and overall identity from the reference image.",
+      "negative_prompt": "chaotic dance, everyone dancing, fast movement, aggressive movement, complex choreography, full crowd animation, random body motion, fast arm waving, jumping, spinning, running, camera shake, handheld shake, fast zoom, fast pan, flashing lights, strobing lights, flicker, morphing faces, changing faces, melting faces, distorted face, ugly face, deformed eyes, broken mouth, twisted neck, broken anatomy, extra arms, extra hands, missing arms, missing hands, extra fingers, missing fingers, twisted fingers, fused fingers, long arms, rubber arms, broken shoulders, twisted torso, warped body, duplicated people, duplicated faces, people merging together, body merging, unstable clothing, modern clothes, futuristic club, blurry foreground, low quality, artifacts",
+      "use_global_generation_settings": true,
+      "generation_overrides": {
+        "width": null,
+        "height": null,
+        "frames": null,
+        "fps": null,
+        "steps": null,
+        "guidance_scale": null,
+        "sampler_name": null,
+        "scheduler": null,
+        "denoise": null,
+        "seed_mode": null,
+        "seed": null,
+        "model_sampling_shift": null,
+        "negative_prompt": null
+      },
+      "color_look_mode": "global",
+      "custom_color_look": {
+        "enabled": false,
+        "saturation": 1.0,
+        "contrast": 1.0,
+        "hue": 0.0,
+        "temperature": 0.0,
+        "shadows": 0.0,
+        "highlights": 0.0,
+        "brightness": 0.0,
+        "gamma": 1.0,
+        "vignette": {
+          "enabled": false,
+          "intensity": 0.25,
+          "radius": 0.75,
+          "softness": 0.5
+        },
+        "film_grain": {
+          "enabled": false,
+          "intensity": 0.15,
+          "grain_size": 0.5,
+          "animated": true
+        },
+        "sharpness": {
+          "enabled": false,
+          "amount": 1.0
+        },
+        "vhs_effect": {
+          "enabled": false,
+          "intensity": 0.3,
+          "scanlines": 0.2,
+          "chromatic_aberration": 0.15,
+          "noise": 0.15,
+          "jitter": 0.1,
+          "tracking_distortion": 0.1,
+          "color_bleeding": 0.15,
+          "tape_damage": 0.05
+        }
+      },
+      "clip_audio_tracks": [],
+      "progress": 30,
+      "stage": "Pipeline ready — encoding prompts",
+      "seed_used": 836260114,
+      "outputs": {
+        "raw": null,
+        "fx": null,
+        "final": null,
+        "preview": "Test_01_clip_001_raw.jpg",
+        "archived": [
+          "raw/Test_01_clip_001_raw.mp4",
+          "final/Test_01_clip_001_final.mp4"
+        ]
+      },
+      "diagnostics": {
+        "effective_settings": {
+          "resolution": "352x640",
+          "frames": 81,
+          "fps": 16,
+          "steps": 32,
+          "guidance_scale": 4.0,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1.0,
+          "seed": 836260114,
+          "mode": "image2video",
+          "model_id": "wan2.2_ti2v_5B_fp16.safetensors",
+          "model_sampling": {
+            "enabled": true,
+            "type": "sd3",
+            "shift": 8.0
+          }
+        },
+        "color_look_mode": "global",
+        "clip_audio_tracks": [],
+        "timings": {
+          "render_seconds": 327.4
+        },
+        "backend": "wan",
+        "is_mock": false,
+        "vram_cleanup": {
+          "reason": "sequence:fcb27dc1d601:after_clip",
+          "gc_collect": true,
+          "cuda_available": true,
+          "empty_cache": true,
+          "ipc_collect": true,
+          "models_unloaded": false,
+          "before_allocated_mb": 9.13,
+          "before_reserved_mb": 24.0,
+          "after_allocated_mb": 9.13,
+          "after_reserved_mb": 24.0,
+          "freed_allocated_mb": 0.0,
+          "freed_reserved_mb": 0.0,
+          "errors": []
+        }
+      },
+      "last_error": null,
+      "needs_regeneration_reason": null,
+      "created_at": "2026-07-07T13:57:01.630320+00:00",
+      "updated_at": "2026-07-07T14:07:04.661115+00:00"
+    },
+    {
+      "clip_id": "9e5826abe8",
+      "index": 1,
+      "name": "Clip 01 Copy",
+      "type": "image_reference",
+      "status": "ready",
+      "source_image": "d7af7f68-a4cc-4c64-8ddd-3c09682a214c.png",
+      "image_fit": "contain",
+      "prompt": "",
+      "negative_prompt": "",
+      "use_global_generation_settings": true,
+      "generation_overrides": {
+        "width": null,
+        "height": null,
+        "frames": null,
+        "fps": null,
+        "steps": null,
+        "guidance_scale": null,
+        "sampler_name": null,
+        "scheduler": null,
+        "denoise": null,
+        "seed_mode": null,
+        "seed": null,
+        "model_sampling_shift": null,
+        "negative_prompt": null
+      },
+      "color_look_mode": "global",
+      "custom_color_look": {
+        "enabled": false,
+        "saturation": 1.0,
+        "contrast": 1.0,
+        "hue": 0.0,
+        "temperature": 0.0,
+        "shadows": 0.0,
+        "highlights": 0.0,
+        "brightness": 0.0,
+        "gamma": 1.0,
+        "vignette": {
+          "enabled": false,
+          "intensity": 0.25,
+          "radius": 0.75,
+          "softness": 0.5
+        },
+        "film_grain": {
+          "enabled": false,
+          "intensity": 0.15,
+          "grain_size": 0.5,
+          "animated": true
+        },
+        "sharpness": {
+          "enabled": false,
+          "amount": 1.0
+        },
+        "vhs_effect": {
+          "enabled": false,
+          "intensity": 0.3,
+          "scanlines": 0.2,
+          "chromatic_aberration": 0.15,
+          "noise": 0.15,
+          "jitter": 0.1,
+          "tracking_distortion": 0.1,
+          "color_bleeding": 0.15,
+          "tape_damage": 0.05
+        }
+      },
+      "clip_audio_tracks": [],
+      "progress": 0,
+      "stage": "",
+      "seed_used": null,
+      "outputs": {
+        "raw": null,
+        "fx": null,
+        "final": null,
+        "preview": null,
+        "archived": []
+      },
+      "diagnostics": null,
+      "last_error": null,
+      "needs_regeneration_reason": null,
+      "created_at": "2026-07-07T13:57:01.630320+00:00",
+      "updated_at": "2026-07-07T13:57:12.513891+00:00"
+    }
+  ],
+  "render_state": {
+    "status": "stopping",
+    "current_clip_id": "57da1447fc",
+    "current_clip_index": 0,
+    "clips_completed": 1,
+    "clips_total": 2,
+    "overall_progress": 15,
+    "current_stage": "Stopping current clip safely...",
+    "can_resume": true,
+    "last_error": null,
+    "started_at": "2026-07-07T14:07:30.685500+00:00",
+    "finished_at": "2026-07-07T14:05:13.145614+00:00"
+  },
+  "outputs": {
+    "merged": null,
+    "final": null
+  },
+  "diagnostics": [
+    "2026-07-07T13:59:45.551497+00:00 | Sequence 'Test 01' render started — backend=wan, output_mode=clips_only, vram_mode=balanced",
+    "2026-07-07T13:59:45.562007+00:00 | Clip 1 ('Clip 01') started — type=image_reference",
+    "2026-07-07T13:59:45.569008+00:00 | Clip 1 settings: 352x640, 81f@16fps, steps=32, cfg=4.0, seed=836260114, mode=image2video",
+    "2026-07-07T14:05:12.971480+00:00 | Clip 1 completed in 327.4s -> Test_01_clip_001_final.mp4",
+    "2026-07-07T14:05:13.142601+00:00 | VRAM cleanup (sequence:fcb27dc1d601:after_clip): attempted, allocated 9->9 MB, reserved 24->24 MB. (vram_mode=balanced)",
+    "2026-07-07T14:05:13.146754+00:00 | Sequence finished: completed (1/2 clips completed)",
+    "2026-07-07T14:07:30.642829+00:00 | Clip 1 previous outputs archived (2 file(s))",
+    "2026-07-07T14:07:30.685500+00:00 | Sequence 'Test 01' render started — backend=wan, output_mode=clips_only, vram_mode=balanced",
+    "2026-07-07T14:07:30.695151+00:00 | Clip 1 ('Clip 01') started — type=image_reference",
+    "2026-07-07T14:07:30.700273+00:00 | Clip 1 settings: 352x640, 81f@16fps, steps=32, cfg=4.0, seed=1707124321, mode=image2video"
+  ],
+  "credits": {
+    "application": "Radica - WanVideoGenerator",
+    "concept_and_design": "Fabrizio Radica",
+    "project_by": "RadicaDesign"
+  },
+  "app_version": "1.0.0"
+}

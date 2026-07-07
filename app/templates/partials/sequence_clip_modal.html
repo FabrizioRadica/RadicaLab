@@ -45,41 +45,14 @@
 
       <label class="toggle" style="margin-bottom:8px;">
         <input type="checkbox" id="clip-use-global" checked><span class="track"></span>
-        <span>Use global generation settings</span>
+        <span>Use Global Generation Parameters</span>
       </label>
 
       <details class="collapsible" id="clip-overrides">
-        <summary>Generation overrides</summary>
-        <div class="field-row">
-          <div class="field"><label class="field-label" for="clip-o-width">Width</label>
-            <input type="number" id="clip-o-width" min="16" max="8192" step="8" placeholder="global"></div>
-          <div class="field"><label class="field-label" for="clip-o-height">Height</label>
-            <input type="number" id="clip-o-height" min="16" max="8192" step="8" placeholder="global"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label class="field-label" for="clip-o-frames">Frames</label>
-            <input type="number" id="clip-o-frames" min="1" max="1000" placeholder="global"></div>
-          <div class="field"><label class="field-label" for="clip-o-fps">FPS</label>
-            <input type="number" id="clip-o-fps" min="1" max="120" placeholder="global"></div>
-          <div class="field"><label class="field-label" for="clip-o-steps">Steps</label>
-            <input type="number" id="clip-o-steps" min="1" max="200" placeholder="global"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label class="field-label" for="clip-o-cfg">CFG</label>
-            <input type="number" id="clip-o-cfg" min="0" max="30" step="0.1" placeholder="global"></div>
-          <div class="field"><label class="field-label" for="clip-o-seedmode">Seed mode</label>
-            <select id="clip-o-seedmode"><option value="">(global)</option><option value="random">Random</option><option value="fixed">Fixed</option></select></div>
-          <div class="field"><label class="field-label" for="clip-o-seed">Seed</label>
-            <input type="number" id="clip-o-seed" min="-1" placeholder="global"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label class="field-label" for="clip-o-sampler">Sampler</label>
-            <select id="clip-o-sampler"><option value="">(global)</option><option>euler</option><option>euler_ancestral</option><option>dpmpp_2m</option><option>uni_pc</option><option>ddim</option></select></div>
-          <div class="field"><label class="field-label" for="clip-o-scheduler">Scheduler</label>
-            <select id="clip-o-scheduler"><option value="">(global)</option><option>simple</option><option>normal</option><option>karras</option><option>beta</option></select></div>
-          <div class="field"><label class="field-label" for="clip-o-shift">MS shift</label>
-            <input type="number" id="clip-o-shift" min="0" max="100" step="0.1" placeholder="global"></div>
-        </div>
+        <summary>Generation Parameters (this clip)</summary>
+        <div class="small muted" style="margin-bottom:8px;">The same Generation Parameters module — edits here override the sequence global settings for this clip only.</div>
+        {% set gp_context = "sequence_clip_override" %}
+        {% include "partials/generation_parameters.html" %}
       </details>
 
       <details class="collapsible" id="clip-look">
@@ -92,15 +65,17 @@
             <option value="off">Off — no Color &amp; Look</option>
           </select>
         </div>
-        <div id="clip-look-editor"></div>
+        <div id="clip-look-custom-wrap">
+          {% set cl_context = "sequence_clip_override" %}
+          {% include "partials/color_look.html" %}
+        </div>
       </details>
 
       <details class="collapsible" id="clip-audio">
         <summary>Clip Audio Tracks</summary>
-        <div class="small muted" style="margin-bottom:6px;">Ambience/SFX for this clip only — applied before merge.</div>
-        <div id="clip-audio-list"></div>
-        <label class="btn btn-sm" style="margin-top:6px;">＋ Add clip audio
-          <input type="file" id="clip-audio-file" accept="audio/*" hidden></label>
+        {% set at_context = "sequence_clip" %}
+        {% set at_note = "Ambience/SFX for this clip only — applied before merge." %}
+        {% include "partials/audio_tracks_module.html" %}
       </details>
     </div>
     <div class="modal-footer">

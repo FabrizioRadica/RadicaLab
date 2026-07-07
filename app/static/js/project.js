@@ -299,8 +299,12 @@ window.WVG = window.WVG || {};
   var durationMode = "custom"; // "custom" or a preset seconds value (number)
 
   function snapFrames(n) {
+    // Shared Wan 4k+1 frame rule (patchSeq §10) — same implementation the
+    // sequence module uses. Local fallback keeps Single Clip working if the
+    // shared module failed to load.
+    if (window.WVGGenParams && WVGGenParams.snapFrames) return WVGGenParams.snapFrames(n);
     n = Math.max(1, Math.min(1000, Math.round(n)));
-    var r = (n - 1) % 4;             // Wan requires frame count = 4k+1
+    var r = (n - 1) % 4;
     if (r !== 0) n += (r >= 2 ? 4 - r : -r);
     return Math.max(1, Math.min(997, n));
   }
@@ -392,52 +396,14 @@ window.WVG = window.WVG || {};
      claims "Wan2.2 does not support euler". */
   function updateSamplingCompat() {
     var warnEl = el("sampling-compat-warning");
-    if (!warnEl) return;
-    var s = WVG.backendStatus;
-    var sup = s && s.sampling_support;
-    if (!sup) { warnEl.style.display = "none"; return; }
-    var direct = sup.direct_backend_samplers || sup.sampler_names || [];
-    var comfy = sup.comfyui_samplers || [];
-    var policy = sup.fallback_policy || "block";
-    var comfyAvail = !!sup.comfyui_available;
-    var sampler = el("f-sampler").value;
-    var den = parseFloat(el("f-denoise").value);
-
-    var directOk = direct.indexOf(sampler) !== -1;
-    var comfyOk = comfy.indexOf(sampler) !== -1;
-    var lines = [];
-    var level = "muted";
-
-    if (directOk) {
-      lines.push('Sampler "' + sampler + '" — Direct backend: supported. Effective sampler: ' + sampler + '.');
-    } else {
-      var action;
-      if (policy === "route_to_comfyui" && comfyAvail && comfyOk) {
-        action = "will route to ComfyUI backend (sampler used exactly).";
-        level = "muted";
-      } else if (policy === "route_to_comfyui") {
-        action = "route to ComfyUI requested, but ComfyUI is not available — generation will be BLOCKED.";
-        level = "warning";
-      } else if (policy === "allow_with_warning") {
-        action = 'debug fallback: will render with "uni_pc" (visible in diagnostics).';
-        level = "warning";
-      } else if (policy === "ask") {
-        action = "you will be asked to confirm a fallback before rendering.";
-        level = "warning";
-      } else {
-        action = "generation will be BLOCKED (no silent fallback). Pick a supported direct sampler or enable ComfyUI routing.";
-        level = "warning";
-      }
-      lines.push('Sampler "' + sampler + '" — Direct backend: unsupported. ' +
-                 'ComfyUI backend: ' + (comfyOk ? "supported" : "unsupported") +
-                 '. Action: ' + action);
-    }
-    if (Math.abs(den - 1) > 1e-6) {
-      lines.push("Denoise " + den.toFixed(2) + " is not applied by the direct backend (full denoise 1.00) — preserved for ComfyUI export.");
-    }
-
-    warnEl.textContent = (level === "warning" ? "⚠ " : "ⓘ ") + lines.join(" ");
-    warnEl.style.color = (level === "warning") ? "var(--warning)" : "var(--muted, #9aa)";
+    if (!warnEl || !window.WVGGenParams) { if (warnEl) warnEl.style.display = "none"; return; }
+    // Shared sampler-support validation (patchSeq §9/§11) — same code path as
+    // the sequence Generation Parameters module.
+    var r = WVGGenParams.samplerCompat(WVG.backendStatus, el("f-sampler").value,
+      parseFloat(el("f-denoise").value));
+    if (!r) { warnEl.style.display = "none"; return; }
+    warnEl.textContent = r.text;
+    warnEl.style.color = (r.level === "warning") ? "var(--warning)" : "var(--muted, #9aa)";
     warnEl.style.display = "";
   }
 
@@ -649,30 +615,13 @@ window.WVG = window.WVG || {};
     if (!statusEl || !enabledEl) return;
     var enabled = enabledEl.checked;
     if (shiftField) shiftField.style.opacity = enabled ? "1" : "0.5";
-    if (!enabled) {
-      statusEl.textContent = "ⓘ ModelSamplingSD3 disabled — the model's default flow shift is used.";
-      statusEl.style.color = "var(--muted, #9aa)";
-      statusEl.style.display = "";
-      return;
-    }
-    var s = WVG.backendStatus;
-    var sup = s && s.model_sampling_support;
     var shift = parseFloat((el("f-model-sampling-shift-num") || {}).value || "8");
-    var msg, warn = false;
-    if (!sup) {
-      msg = 'ModelSamplingSD3 enabled (shift ' + shift.toFixed(2) + ').';
-    } else if (sup.direct_backend_supported) {
-      msg = 'ModelSamplingSD3 enabled (shift ' + shift.toFixed(2) + ') — applied by the direct backend as the flow-matching shift.';
-    } else if (sup.fallback_policy === "route_to_comfyui" && sup.comfyui_available) {
-      msg = 'ModelSamplingSD3 enabled (shift ' + shift.toFixed(2) + ') — will route to ComfyUI backend.';
-    } else if (sup.fallback_policy === "block") {
-      msg = 'ModelSamplingSD3 enabled but the direct backend cannot apply it — generation will be BLOCKED. Enable ComfyUI routing or disable it.';
-      warn = true;
-    } else {
-      msg = 'ModelSamplingSD3 enabled (shift ' + shift.toFixed(2) + ').';
-    }
-    statusEl.textContent = (warn ? "⚠ " : "ⓘ ") + msg;
-    statusEl.style.color = warn ? "var(--warning)" : "var(--muted, #9aa)";
+    // Shared ModelSamplingSD3 status (patchSeq §9) — same code path as the
+    // sequence Generation Parameters module.
+    if (!window.WVGGenParams) { statusEl.style.display = "none"; return; }
+    var r = WVGGenParams.modelSamplingStatus(WVG.backendStatus, enabled, shift);
+    statusEl.textContent = r.text;
+    statusEl.style.color = r.warn ? "var(--warning)" : "var(--muted, #9aa)";
     statusEl.style.display = "";
   }
 
