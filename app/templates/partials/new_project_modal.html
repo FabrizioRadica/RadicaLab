@@ -1,0 +1,113 @@
+<div class="modal-backdrop" id="wizard-backdrop">
+  <div class="modal" style="max-width:780px;">
+    <div class="modal-header">
+      <h2>New Project</h2>
+      <button class="btn btn-icon" onclick="WVG.closeWizard()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="wizard">
+        <div class="wizard-steps" id="wizard-steps">
+          <div class="wizard-step-item" data-step="1"><span class="num">1</span> Project Info</div>
+          <div class="wizard-step-item" data-step="2"><span class="num">2</span> Generation Mode</div>
+          <div class="wizard-step-item" data-step="3"><span class="num">3</span> Orientation</div>
+          <div class="wizard-step-item" data-step="4"><span class="num">4</span> Resolution</div>
+          <div class="wizard-step-item" data-step="5"><span class="num">5</span> Summary</div>
+        </div>
+        <div class="wizard-pane">
+
+          <div class="wizard-page" data-page="1">
+            <h3>Project Information</h3>
+            <div class="field">
+              <label class="field-label" for="wz-name">Project name *</label>
+              <input type="text" id="wz-name" placeholder="Beach Model Test 01" maxlength="80">
+            </div>
+            <div class="field">
+              <label class="field-label" for="wz-desc">Description <span class="muted">(optional)</span></label>
+              <textarea id="wz-desc" rows="3" placeholder="Short description of this project…"></textarea>
+            </div>
+            <div class="field">
+              <label class="field-label" for="wz-tags">Tags <span class="muted">(optional, comma separated)</span></label>
+              <input type="text" id="wz-tags" placeholder="test, beach, cinematic">
+            </div>
+            <p class="small muted">Project folder: <span class="mono" id="wz-folder-preview">—</span></p>
+          </div>
+
+          <div class="wizard-page" data-page="2" style="display:none;">
+            <h3>Generation Mode</h3>
+            <div class="choice-cards">
+              <div class="choice-card selected" data-wz-mode="text2video">
+                <div class="choice-icon">T</div>
+                <div>
+                  <div class="choice-title">Text2Video</div>
+                  <div class="choice-desc">Generate video from a text prompt</div>
+                </div>
+              </div>
+              <div class="choice-card" data-wz-mode="image2video">
+                <div class="choice-icon">🖼</div>
+                <div>
+                  <div class="choice-title">Image2Video</div>
+                  <div class="choice-desc">Generate video from an image + prompt</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-page" data-page="3" style="display:none;">
+            <h3>Orientation</h3>
+            <div class="choice-cards">
+              <div class="choice-card selected" data-wz-orientation="landscape">
+                <div class="choice-icon">▭</div>
+                <div>
+                  <div class="choice-title">Landscape</div>
+                  <div class="choice-desc">16:9 — horizontal video</div>
+                </div>
+              </div>
+              <div class="choice-card" data-wz-orientation="portrait">
+                <div class="choice-icon">▯</div>
+                <div>
+                  <div class="choice-title">Portrait</div>
+                  <div class="choice-desc">9:16 — vertical video</div>
+                </div>
+              </div>
+              <div class="choice-card" data-wz-orientation="square">
+                <div class="choice-icon">◻</div>
+                <div>
+                  <div class="choice-title">Square</div>
+                  <div class="choice-desc">1:1 — square video</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-page" data-page="4" style="display:none;">
+            <h3>Resolution</h3>
+            <div class="preset-grid" id="wz-res-grid"></div>
+            <div class="field-row" id="wz-custom-res" style="display:none;margin-top:12px;">
+              <div class="field">
+                <label class="field-label">Width</label>
+                <input type="number" id="wz-width" min="16" max="8192" step="8" value="1280">
+              </div>
+              <div class="field">
+                <label class="field-label">Height</label>
+                <input type="number" id="wz-height" min="16" max="8192" step="8" value="720">
+              </div>
+            </div>
+            <p class="small muted" id="wz-res-error" style="color:var(--danger);display:none;"></p>
+          </div>
+
+          <div class="wizard-page" data-page="5" style="display:none;">
+            <h3>Summary</h3>
+            <ul class="summary-list" id="wz-summary"></ul>
+            <p class="small muted" style="margin-top:12px;">The project folder and .wanproj file will be created now.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="WVG.closeWizard()">Cancel</button>
+      <button class="btn" id="wz-back" disabled>‹ Back</button>
+      <button class="btn btn-primary" id="wz-next">Next ›</button>
+    </div>
+  </div>
+</div>

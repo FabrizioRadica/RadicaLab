@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% set page_title = "Settings" %}
+{% set page_subtitle = "Preferences and configuration (.env)" %}
+{% block title %}Settings — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="settings-layout">
+  <nav class="settings-nav">
+    <a class="nav-item active" href="#s-general" data-target="s-general">⚙ General</a>
+    <a class="nav-item" href="#s-models" data-target="s-models">◈ Models</a>
+    <a class="nav-item" href="#s-performance" data-target="s-performance">⚡ Performance</a>
+    <a class="nav-item" href="#s-paths" data-target="s-paths">📁 Paths</a>
+    <a class="nav-item" href="#s-interface" data-target="s-interface">🖥 Interface</a>
+    <a class="nav-item" href="#s-advanced" data-target="s-advanced">🛠 Advanced</a>
+  </nav>
+
+  <div class="settings-body">
+    {% if not config.env_file_found %}
+    <div class="panel" style="border-color:var(--warning);">
+      <strong style="color:var(--warning);">⚠ No .env file found.</strong>
+      <span class="muted small">The app is running on built-in defaults. Copy <span class="mono">.env.example</span> to <span class="mono">.env</span> and restart.</span>
+    </div>
+    {% endif %}
+
+    <div class="panel" id="s-general">
+      <div class="panel-header"><h2>General</h2><span class="hint">Values loaded from .env — edit the file and restart to change them</span></div>
+      <ul class="kv-list">
+        <li><span class="k">Application</span><span class="v">{{ config.general.app_name }} v{{ config.general.app_version }}</span></li>
+        <li><span class="k">Environment</span><span class="v">{{ config.general.environment }}{{ " · debug" if config.general.debug }}</span></li>
+        <li><span class="k">Generation backend</span><span class="v">{{ config.general.generation_backend }}{{ " (DEVELOPER-ONLY simulated output — not real generation)" if config.general.generation_backend == "mock" else " (real Wan 2.2+ inference)" }}</span></li>
+        <li><span class="k">Default generation mode</span><span class="v">{{ config.general.default_generation_mode }}</span></li>
+        <li><span class="k">Default output format</span><span class="v">{{ config.general.default_output_format }}</span></li>
+        <li><span class="k">Default resolution / orientation</span><span class="v">{{ config.generation_defaults.resolution }} · {{ config.generation_defaults.orientation }}</span></li>
+        <li><span class="k">Defaults: FPS / frames / steps</span><span class="v">{{ config.generation_defaults.fps }} / {{ config.generation_defaults.frames }} / {{ config.generation_defaults.steps }}</span></li>
+        <li><span class="k">Defaults: guidance / motion strength</span><span class="v">{{ config.generation_defaults.guidance_scale }} / {{ config.generation_defaults.motion_strength }}</span></li>
+      </ul>
+    </div>
+
+    <div class="panel" id="s-models">
+      <div class="panel-header"><h2>Models</h2><a class="btn btn-sm" href="/models">Open Model Manager</a></div>
+      <ul class="kv-list">
+        <li><span class="k">Default Text2Video model</span><span class="v">{{ config.models.default_t2v_model }}</span></li>
+        <li><span class="k">Default Image2Video model</span><span class="v">{{ config.models.default_i2v_model }}</span></li>
+        <li><span class="k">Registered models</span><span class="v">{{ models | length }}</span></li>
+      </ul>
+      {% if models %}
+      <div class="table-wrap" style="margin-top:8px;">
+        <table class="data-table">
+          <thead><tr><th>Model</th><th>Type</th><th>Status</th><th>Default</th></tr></thead>
+          <tbody>
+            {% for m in models %}
+            <tr>
+              <td>{{ m.display_name }}</td>
+              <td class="muted">{{ m.generation_type }}</td>
+              <td><span class="badge badge-{{ m.status }}">{{ m.status | upper }}</span></td>
+              <td class="muted">{{ "T2V " if m.default_t2v }}{{ "I2V" if m.default_i2v }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="panel" id="s-wan-backend">
+      <div class="panel-header"><h2>Wan Backend</h2><span class="hint">Real inference runtime options (.env)</span></div>
+      <ul class="kv-list">
+        <li><span class="k">Torch dtype</span><span class="v">{{ config.wan_backend.torch_dtype }}</span></li>
+        <li><span class="k">Compute precision (requested)</span><span class="v">{{ config.wan_backend.compute_precision }}</span></li>
+        <li><span class="k">Offload policy</span><span class="v">{{ config.wan_backend.offload_policy }} (mode: {{ config.wan_backend.offload_mode }})</span></li>
+        <li><span class="k">Attention slicing</span><span class="v">{{ "Enabled" if config.wan_backend.attention_slicing else "Disabled" }}</span></li>
+        <li><span class="k">Flow shift</span><span class="v">{{ config.wan_backend.flow_shift }}</span></li>
+        <li><span class="k">A14B boundary ratio</span><span class="v">{{ config.wan_backend.boundary_ratio }}</span></li>
+        <li><span class="k">HF Hub tokenizer download</span><span class="v">{{ "Allowed" if config.wan_backend.allow_hf_download else "Blocked" }}</span></li>
+        <li><span class="k">Keep model warm</span><span class="v">{{ "Yes" if config.wan_backend.keep_model_warm else "No (unload after each run)" }}</span></li>
+        <li><span class="k">Clear temp VRAM after generation</span><span class="v">{{ "Yes" if config.wan_backend.clear_temp_vram_after_generation else "No" }}</span></li>
+        <li><span class="k">Unload model after generation</span><span class="v">{{ "Yes" if config.wan_backend.unload_model_after_generation else "No" }}</span></li>
+      </ul>
+    </div>
+
+    <div class="panel" id="s-device-placement">
+      <div class="panel-header"><h2>Device Placement</h2><span class="hint">Per-component device policy (.env) — effective placement is shown in Backend Diagnostics after each generation</span></div>
+      <ul class="kv-list">
+        <li><span class="k">Main device</span><span class="v">{{ config.device_placement.main_device }}</span></li>
+        <li><span class="k">Diffusion model</span><span class="v">{{ config.device_placement.diffusion_device }}</span></li>
+        <li><span class="k">Text encoder</span><span class="v">{{ config.device_placement.text_encoder_device }}</span></li>
+        <li><span class="k">VAE</span><span class="v">{{ config.device_placement.vae_device }}</span></li>
+        <li><span class="k">Vision encoder</span><span class="v">{{ config.device_placement.vision_encoder_device }}</span></li>
+        <li><span class="k">Force GPU when possible</span><span class="v">{{ "Yes" if config.device_placement.force_gpu_when_possible else "No" }}</span></li>
+      </ul>
+    </div>
+
+    <div class="panel" id="s-performance">
+      <div class="panel-header"><h2>Performance</h2></div>
+      <ul class="kv-list">
+        <li><span class="k">CUDA</span><span class="v">{{ "Enabled" if config.performance.use_cuda else "Disabled" }} · device {{ config.performance.default_device }}</span></li>
+        <li><span class="k">Memory optimization</span><span class="v">{{ "Enabled" if config.performance.memory_optimization else "Disabled" }}</span></li>
+        <li><span class="k">Max parallel jobs</span><span class="v">{{ config.performance.max_parallel_jobs }}</span></li>
+        <li><span class="k">VRAM warning threshold</span><span class="v">{{ config.performance.vram_warning_gb }} GB</span></li>
+        <li><span class="k">Max upload size</span><span class="v">{{ config.uploads.max_upload_size_mb }} MB</span></li>
+        <li><span class="k">Allowed image formats</span><span class="v">{{ config.uploads.allowed_image_extensions | join(", ") }}</span></li>
+      </ul>
+    </div>
+
+    <div class="panel" id="s-paths">
+      <div class="panel-header"><h2>Paths</h2><span class="hint">Configured in .env</span></div>
+      <ul class="kv-list">
+        <li><span class="k">Projects root</span><span class="v mono">{{ config.paths.projects_root }}</span></li>
+        <li><span class="k">Outputs root</span><span class="v mono">{{ config.paths.outputs_root }}</span></li>
+        <li><span class="k">Models root</span><span class="v mono">{{ config.paths.models_root }}</span></li>
+        <li><span class="k">Workflows root</span><span class="v mono">{{ config.paths.workflows_root }}</span></li>
+        <li><span class="k">Temp root</span><span class="v mono">{{ config.paths.temp_root }}</span></li>
+        <li><span class="k">Logs</span><span class="v mono">{{ config.logging.file }}</span></li>
+      </ul>
+    </div>
+
+    <div class="panel" id="s-interface">
+      <div class="panel-header"><h2>Interface</h2><span class="hint">Stored in this browser</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <label class="toggle"><input type="checkbox" id="ui-dark" checked disabled><span class="track"></span><span>Dark theme (default)</span></label>
+        <label class="toggle"><input type="checkbox" id="ui-advanced-open"><span class="track"></span><span>Expand advanced parameters by default</span></label>
+        <label class="toggle"><input type="checkbox" id="ui-compact"><span class="track"></span><span>Compact mode</span></label>
+      </div>
+    </div>
+
+    <div class="panel" id="s-advanced">
+      <div class="panel-header"><h2>Advanced</h2></div>
+      <ul class="kv-list">
+        <li><span class="k">Debug mode</span><span class="v">{{ "On" if config.general.debug else "Off" }}</span></li>
+        <li><span class="k">Backend test mode (mock)</span><span class="v">{{ "Active" if config.general.generation_backend == "mock" else "Off" }}</span></li>
+        <li><span class="k">ComfyUI export</span><span class="v">{{ "Enabled" if config.comfyui.export_enabled else "Disabled" }} · {{ config.comfyui.workflow_version }}</span></li>
+        <li><span class="k">Log level</span><span class="v">{{ config.logging.level }}</span></li>
+      </ul>
+      <div style="margin-top:12px;">
+        <button class="btn btn-sm" id="btn-load-logs">📄 View recent log</button>
+      </div>
+      <div class="job-log" id="log-viewer" style="display:none;max-height:320px;margin-top:10px;"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><h2>Credits</h2></div>
+      <p class="small" style="margin:0;">
+        <strong>{{ config.general.app_name }}</strong><br>
+        Concept &amp; Design: {{ config.credits.concept_and_design }}<br>
+        Project by {{ config.credits.project_by }}
+      </p>
+    </div>
+  </div>
+</div>
+{% include "partials/new_project_modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/project.js"></script>
+<script>
+(function () {
+  document.querySelectorAll(".settings-nav .nav-item").forEach(function (item) {
+    item.addEventListener("click", function () {
+      document.querySelectorAll(".settings-nav .nav-item").forEach(function (n) { n.classList.remove("active"); });
+      item.classList.add("active");
+    });
+  });
+  var uiPrefs = ["ui-advanced-open", "ui-compact"];
+  uiPrefs.forEach(function (id) {
+    var el = document.getElementById(id);
+    el.checked = localStorage.getItem("wvg:" + id) === "1";
+    el.addEventListener("change", function () {
+      localStorage.setItem("wvg:" + id, el.checked ? "1" : "0");
+      WVG.toast("Interface preference saved", "success");
+    });
+  });
+  document.getElementById("btn-load-logs").addEventListener("click", async function () {
+    var viewer = document.getElementById("log-viewer");
+    try {
+      var data = await WVG.api("/api/logs?lines=300");
+      viewer.textContent = (data.lines && data.lines.length) ? data.lines.join("\n") : "Log file is empty.";
+      viewer.style.display = "block";
+      viewer.scrollTop = viewer.scrollHeight;
+    } catch (e) { WVG.toast("Could not load log", "error", e.message); }
+  });
+})();
+</script>
+{% endblock %}

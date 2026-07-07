@@ -1,0 +1,18 @@
+{
+  "application": "Radica - WanVideoGenerator",
+  "credits": {
+    "concept_and_design": "Fabrizio Radica",
+    "project_by": "RadicaDesign"
+  },
+  "cancel_requested_at": null,
+  "written_at": "2026-07-06T21:57:52.597347+00:00",
+  "job_id": "2b31bf7da9a1",
+  "project_id": "e5ac2a43af55",
+  "project_name": "BeachVideo",
+  "status": "cancelled",
+  "backend": "wan",
+  "cancelled_at": "2026-07-06T21:57:52.409272+00:00",
+  "partial_output_deleted": false,
+  "deleted_files": [],
+  "message": "Generation cancelled by user."
+}

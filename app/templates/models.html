@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% set page_title = "Model Manager" %}
+{% set page_subtitle = "Manage your local Wan models" %}
+{% block title %}Models — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-toolbar">
+  <span class="muted small">Every model is a <strong>Model Bundle</strong> — a Wan pipeline may need several files
+    (diffusion model, VAE, text/CLIP/T5/vision encoders, tokenizer, configs, LoRAs), not just one checkpoint.
+    Bundles are stored in <span class="mono">models/registry.json</span>.</span>
+  <div style="flex:1"></div>
+  <button class="btn btn-primary" onclick="WVGModels.openEditor()">＋ Add Model Bundle</button>
+</div>
+
+<div class="panel">
+  <div class="table-wrap">
+    <table class="data-table" id="models-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Family</th>
+          <th>Path</th>
+          <th>Status</th>
+          <th>VRAM</th>
+          <th>Default</th>
+          <th style="width:150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="models-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel" id="model-detail-panel" style="margin-top:14px;display:none;">
+  <div class="panel-header">
+    <h2 id="detail-name">Model</h2>
+    <div>
+      <button class="btn btn-sm" id="detail-validate">✓ Validate Bundle</button>
+      <button class="btn btn-sm" id="detail-default-t2v">Set default T2V</button>
+      <button class="btn btn-sm" id="detail-default-i2v">Set default I2V</button>
+    </div>
+  </div>
+  <ul class="kv-list" id="detail-kv"></ul>
+  <div id="detail-validation" style="margin-top:10px;"></div>
+</div>
+
+<div class="modal-backdrop" id="model-editor-backdrop">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <h2 id="model-editor-title">Add Model Bundle</h2>
+      <button class="btn btn-icon" onclick="WVG.closeModal('model-editor-backdrop')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-section" style="border-top:0;margin-top:0;padding-top:0;">
+        <div class="section-title">1 · Identity</div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Display name *</label>
+            <input type="text" id="me-name" placeholder="Wan2.2 T2V 14B">
+          </div>
+          <div class="field" style="max-width:200px;">
+            <label class="field-label">Model ID</label>
+            <input type="text" id="me-id" placeholder="auto from name">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Model family</label>
+            <input type="text" id="me-family" value="Wan2.2">
+          </div>
+          <div class="field">
+            <label class="field-label">Version</label>
+            <input type="text" id="me-version" value="2.2">
+          </div>
+          <div class="field">
+            <label class="field-label">Generation type</label>
+            <select id="me-type">
+              <option value="text2video">Text2Video</option>
+              <option value="image2video">Image2Video</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Notes</label>
+          <textarea id="me-notes" rows="2"></textarea>
+        </div>
+        <label class="toggle"><input type="checkbox" id="me-experimental"><span class="track"></span><span>Experimental model</span></label>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">2 · Backend compatibility</div>
+        <div class="field" style="display:flex;gap:18px;flex-wrap:wrap;">
+          <label class="toggle"><input type="checkbox" id="me-b-direct"><span class="track"></span><span>Direct Python backend</span></label>
+          <label class="toggle"><input type="checkbox" id="me-b-comfy" checked><span class="track"></span><span>ComfyUI export</span></label>
+          <label class="toggle"><input type="checkbox" id="me-b-mock" checked><span class="track"></span><span>Mock/test backend (developer-only, simulated output)</span></label>
+        </div>
+        <div class="field">
+          <label class="field-label">Backend notes</label>
+          <input type="text" id="me-backend-notes" placeholder="e.g. requires WanVideo wrapper nodes in ComfyUI">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">3 · Core components</div>
+        <div class="section-hint">⚠ A Wan pipeline may require several separate files — one checkpoint is not always enough.
+          Configure at least a diffusion model <em>or</em> a main checkpoint; add the other components your backend needs.</div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Diffusion model path</label>
+            <input type="text" id="me-diffusion" placeholder="…\diffusion_models\wan2.2_t2v_14b.safetensors">
+          </div>
+          <div class="field">
+            <label class="field-label">Main checkpoint path</label>
+            <input type="text" id="me-checkpoint" placeholder="…\checkpoints\wan2.2_t2v_14b.safetensors">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">VAE path</label>
+            <input type="text" id="me-vae" placeholder="…\vae\wan_2.1_vae.safetensors">
+          </div>
+          <div class="field">
+            <label class="field-label">Text encoder path</label>
+            <input type="text" id="me-text-encoder" placeholder="…\text_encoders\umt5_xxl_fp8.safetensors">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">CLIP path</label>
+            <input type="text" id="me-clip">
+          </div>
+          <div class="field">
+            <label class="field-label">T5 encoder path</label>
+            <input type="text" id="me-t5">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Vision encoder path <span class="muted">(Image2Video)</span></label>
+            <input type="text" id="me-vision" placeholder="…\clip_vision\clip_vision_h.safetensors">
+          </div>
+          <div class="field">
+            <label class="field-label">Tokenizer path</label>
+            <input type="text" id="me-tokenizer">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Config path</label>
+            <input type="text" id="me-config">
+          </div>
+          <div class="field">
+            <label class="field-label">Scheduler config path</label>
+            <input type="text" id="me-scheduler">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">4 · Optional components</div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">LoRA paths <span class="muted">(one per line)</span></label>
+            <textarea id="me-loras" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Control model paths <span class="muted">(one per line)</span></label>
+            <textarea id="me-controls" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Upscaler model path</label>
+            <input type="text" id="me-upscaler">
+          </div>
+          <div class="field">
+            <label class="field-label">Auxiliary model paths <span class="muted">(one per line)</span></label>
+            <textarea id="me-aux" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Custom components <span class="muted">(one per line, format: name = path)</span></label>
+          <textarea id="me-custom" rows="2" placeholder="motion_module = D:\AI_Models\extra\motion.safetensors"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">5 · Recommendations</div>
+        <div class="field-row">
+          <div class="field" style="max-width:180px;">
+            <label class="field-label">Recommended VRAM (GB)</label>
+            <input type="number" id="me-vram" min="1" max="128" value="12">
+          </div>
+          <div class="field">
+            <label class="field-label">Recommended resolutions <span class="muted">(comma separated)</span></label>
+            <input type="text" id="me-resolutions" value="1280x720">
+          </div>
+          <div class="field">
+            <label class="field-label">Supported resolutions <span class="muted">(comma separated)</span></label>
+            <input type="text" id="me-supported-res">
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="WVG.closeModal('model-editor-backdrop')">Cancel</button>
+      <button class="btn btn-primary" id="me-save">Save Model Bundle</button>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="models-data">{{ models | tojson }}</script>
+{% include "partials/new_project_modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/project.js"></script>
+<script src="/static/js/models.js"></script>
+{% endblock %}

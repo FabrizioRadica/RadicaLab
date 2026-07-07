@@ -1,0 +1,217 @@
+{
+  "workflow_format": "wan_video_generator_v1",
+  "nodes": {
+    "1": {
+      "class_type": "WanVideoModelLoader",
+      "_meta": {
+        "title": "Load Wan Model"
+      },
+      "inputs": {
+        "model_name": "wan2.2_ti2v_5B_fp16.safetensors",
+        "diffusion_model": "",
+        "checkpoint": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\wan2.2_ti2v_5B_fp16.safetensors",
+        "vae": "",
+        "text_encoder": "",
+        "clip": "",
+        "t5_encoder": "",
+        "vision_encoder": "",
+        "tokenizer": "",
+        "config": "",
+        "scheduler_config": "",
+        "precision": "bf16",
+        "load_device": "cuda"
+      }
+    },
+    "2": {
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "Positive Prompt"
+      },
+      "inputs": {
+        "text": "A cinematic scene of a futuristic city at sunset, flying cars, neon lights, slow pronounced cinematic orbit left around the subject, full circular orbit path, constant distance from the subject, smooth fluid camera movement, stable framing",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "Negative Prompt"
+      },
+      "inputs": {
+        "text": "blurry, low quality, watermark",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "4": {
+      "class_type": "WanVideoEmptyEmbeds",
+      "_meta": {
+        "title": "Empty Video Latent"
+      },
+      "inputs": {
+        "width": 384,
+        "height": 216,
+        "num_frames": 81
+      }
+    },
+    "5": {
+      "class_type": "WanVideoSampler",
+      "_meta": {
+        "title": "Wan Video Sampler"
+      },
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "2",
+          0
+        ],
+        "negative": [
+          "3",
+          0
+        ],
+        "latents": [
+          "4",
+          0
+        ],
+        "seed": -1,
+        "steps": 30,
+        "cfg": 6.0,
+        "sampler_name": "unipc",
+        "motion_strength": 0.7
+      }
+    },
+    "6": {
+      "class_type": "WanVideoDecode",
+      "_meta": {
+        "title": "VAE Decode"
+      },
+      "inputs": {
+        "samples": [
+          "5",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "7": {
+      "class_type": "VHS_VideoCombine",
+      "_meta": {
+        "title": "Save Video"
+      },
+      "inputs": {
+        "images": [
+          "6",
+          0
+        ],
+        "frame_rate": 24,
+        "format": "video/mp4",
+        "filename_prefix": "Beach_Model_Test_01",
+        "save_output": true
+      }
+    }
+  },
+  "extra": {
+    "wan_video_generator": {
+      "application": "Radica - WanVideoGenerator",
+      "app_version": "1.0.0",
+      "credits": {
+        "concept_and_design": "Fabrizio Radica",
+        "project_by": "RadicaDesign"
+      },
+      "compatibility_note": "This workflow targets a Wan2.2 video pipeline. Exact node compatibility depends on the Wan video node packages installed in your ComfyUI (e.g. WanVideo wrapper nodes). If a node class is missing, re-link the equivalent node from your installation. All generation settings are also available under extra.wan_video_generator.",
+      "exported_at": "2026-07-05T21:39:01.103790+00:00",
+      "project": {
+        "id": "594fb0482197",
+        "name": "Beach Model Test 01",
+        "description": "Smoke test project",
+        "tags": [
+          "test",
+          "beach"
+        ],
+        "created_at": "2026-07-05T21:38:58.045600+00:00"
+      },
+      "model_bundle": {
+        "model_bundle_id": "wan2.2_ti2v_5B_fp16.safetensors",
+        "model_bundle_name": "wan2.2_ti2v_5B_fp16.safetensors",
+        "generation_type": "both",
+        "diffusion_model_path": "",
+        "checkpoint_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\wan2.2_ti2v_5B_fp16.safetensors",
+        "vae_path": "",
+        "text_encoder_path": "",
+        "clip_path": "",
+        "t5_encoder_path": "",
+        "vision_encoder_path": "",
+        "tokenizer_path": "",
+        "config_path": "",
+        "scheduler_config_path": "",
+        "lora_paths": [],
+        "control_model_paths": [],
+        "upscaler_model_path": "",
+        "auxiliary_model_paths": [],
+        "custom_component_paths": {}
+      },
+      "generation": {
+        "mode": "text2video",
+        "model_id": "wan2.2_ti2v_5B_fp16.safetensors",
+        "positive_prompt": "A cinematic scene of a futuristic city at sunset, flying cars, neon lights",
+        "negative_prompt": "blurry, low quality, watermark",
+        "final_composed_prompt": "A cinematic scene of a futuristic city at sunset, flying cars, neon lights, slow pronounced cinematic orbit left around the subject, full circular orbit path, constant distance from the subject, smooth fluid camera movement, stable framing",
+        "resolution": "384x216",
+        "orientation": "landscape",
+        "fps": 24,
+        "frames": 81,
+        "seed": -1,
+        "random_seed": true,
+        "guidance_scale": 6.0,
+        "motion_strength": 0.7,
+        "image_influence": null,
+        "output_format": "mp4",
+        "source_image": null,
+        "advanced": {
+          "steps": 30,
+          "sampler": "unipc",
+          "precision": "bf16",
+          "memory_optimization": true,
+          "device": "cuda",
+          "model_offload": false,
+          "cache_latents": false,
+          "preview_frames": false,
+          "save_intermediate_frames": false,
+          "output_codec": "h264"
+        }
+      },
+      "camera_motion": {
+        "enabled": true,
+        "movement_type": "orbit_left",
+        "fragment": "slow pronounced cinematic orbit left around the subject, full circular orbit path, constant distance from the subject, smooth fluid camera movement, stable framing",
+        "applied_to_prompt": true,
+        "settings": {
+          "enabled": true,
+          "movement_type": "orbit_left",
+          "intensity": 0.65,
+          "speed": 0.55,
+          "smoothness": 0.8,
+          "orbit_angle": 360,
+          "distance": 3.5,
+          "height": 1.5,
+          "path_type": "full_circle",
+          "framing": "stable",
+          "preset": null,
+          "fragment": "slow pronounced cinematic orbit left around the subject, full circular orbit path, constant distance from the subject, smooth fluid camera movement, stable framing",
+          "applied_to_prompt": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,344 @@
+{
+  "application": "Radica - WanVideoGenerator",
+  "app_version": "1.0.0",
+  "credits": {
+    "concept_and_design": "Fabrizio Radica",
+    "project_by": "RadicaDesign"
+  },
+  "project_id": "e5ac2a43af55",
+  "project_name": "BeachVideo",
+  "generation_mode": "image2video",
+  "model_id": "wan2.2_ti2v_5B_fp16.safetensors",
+  "model_name": "Wan2.2 TI2V 5B (fp16)",
+  "model_bundle_id": "wan2.2_ti2v_5B_fp16.safetensors",
+  "model_bundle_name": "Wan2.2 TI2V 5B (fp16)",
+  "model_bundle_snapshot": {
+    "model_bundle_id": "wan2.2_ti2v_5B_fp16.safetensors",
+    "model_bundle_name": "Wan2.2 TI2V 5B (fp16)",
+    "generation_type": "both",
+    "diffusion_model_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\diffusion_models\\wan2.2_ti2v_5B_fp16.safetensors",
+    "checkpoint_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\diffusion_models\\wan2.2_ti2v_5B_fp16.safetensors",
+    "vae_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\vae\\wan2.2_vae.safetensors",
+    "text_encoder_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\text_encoders\\umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "clip_path": "",
+    "t5_encoder_path": "",
+    "vision_encoder_path": "",
+    "tokenizer_path": "",
+    "config_path": "",
+    "scheduler_config_path": "",
+    "lora_paths": [],
+    "control_model_paths": [],
+    "upscaler_model_path": "",
+    "auxiliary_model_paths": [],
+    "custom_component_paths": {}
+  },
+  "diffusion_model_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\diffusion_models\\wan2.2_ti2v_5B_fp16.safetensors",
+  "checkpoint_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\diffusion_models\\wan2.2_ti2v_5B_fp16.safetensors",
+  "vae_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\vae\\wan2.2_vae.safetensors",
+  "text_encoder_path": "D:\\Works\\Progetti AI\\RadicaWanGen\\models\\text_encoders\\umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+  "clip_path": "",
+  "t5_encoder_path": "",
+  "vision_encoder_path": "",
+  "tokenizer_path": "",
+  "config_path": "",
+  "scheduler_config_path": "",
+  "lora_paths": [],
+  "control_model_paths": [],
+  "upscaler_model_path": "",
+  "auxiliary_model_paths": [],
+  "positive_prompt": "Cinematic realistic video of a beautiful fashion model walking slowly on the shoreline at sunset, on a quiet beach.\n\nThe woman is around 28-32 years old, elegant, Mediterranean beauty, long dark hair moved gently by the sea breeze, natural makeup, refined facial features, expressive eyes, graceful posture.\n\nShe walks barefoot on the wet sand near the waterline, with small waves gently touching her feet. Her movement is slow, natural and fluid, like a professional fashion editorial video. She looks relaxed and confident, occasionally glancing toward the horizon and then slightly toward the camera.\n\nShe wears a light elegant summer dress, soft fabric moving naturally with the wind, cinematic and tasteful, not provocative. The dress reflects the warm golden sunset light.\n\nThe beach is calm and atmospheric. The sun is low on the horizon, warm orange and pink sky, soft reflections on the wet sand, gentle sea waves, subtle wind, cinematic depth of field.\n\nCamera movement is slow and smooth, tracking shot from a medium distance, slightly low angle, following her as she walks along the shoreline. Realistic human anatomy, correct walking motion, stable face, stable body proportions, natural arms movement, realistic feet contact with wet sand.\n\nHigh quality cinematic lighting, realistic skin, natural shadows, elegant fashion film style, warm sunset atmosphere, photorealistic, smooth motion, 24 fps, shallow depth of field, soft lens flare, realistic beach environment.",
+  "negative_prompt": "bad anatomy, deformed body, distorted legs, broken legs, extra legs, extra arms, missing fingers, fused fingers, malformed hands, twisted feet, unnatural walking, sliding feet, floating body, unstable body, body jitter, face distortion, changing face, melting face, asymmetrical face, crossed eyes, bad eyes, blinking artifacts, unnatural smile, plastic skin, doll face, uncanny valley, unrealistic skin texture, low quality, blurry, noisy, pixelated, overexposed, underexposed, harsh shadows, bad lighting, bad perspective, distorted horizon, warped background, flickering, temporal inconsistency, camera shake, fast camera movement, sudden zoom, jump cuts, duplicated person, multiple bodies, crowd, text, logo, watermark, oversaturated colors, cartoon, anime, CGI, 3D render, low resolution, compression artifacts, nudity, vulgar pose, provocative pose",
+  "final_composed_prompt": "Cinematic realistic video of a beautiful fashion model walking slowly on the shoreline at sunset, on a quiet beach.\n\nThe woman is around 28-32 years old, elegant, Mediterranean beauty, long dark hair moved gently by the sea breeze, natural makeup, refined facial features, expressive eyes, graceful posture.\n\nShe walks barefoot on the wet sand near the waterline, with small waves gently touching her feet. Her movement is slow, natural and fluid, like a professional fashion editorial video. She looks relaxed and confident, occasionally glancing toward the horizon and then slightly toward the camera.\n\nShe wears a light elegant summer dress, soft fabric moving naturally with the wind, cinematic and tasteful, not provocative. The dress reflects the warm golden sunset light.\n\nThe beach is calm and atmospheric. The sun is low on the horizon, warm orange and pink sky, soft reflections on the wet sand, gentle sea waves, subtle wind, cinematic depth of field.\n\nCamera movement is slow and smooth, tracking shot from a medium distance, slightly low angle, following her as she walks along the shoreline. Realistic human anatomy, correct walking motion, stable face, stable body proportions, natural arms movement, realistic feet contact with wet sand.\n\nHigh quality cinematic lighting, realistic skin, natural shadows, elegant fashion film style, warm sunset atmosphere, photorealistic, smooth motion, 24 fps, shallow depth of field, soft lens flare, realistic beach environment.",
+  "camera_motion": {
+    "enabled": false,
+    "movement_type": "static",
+    "intensity": 0.65,
+    "speed": 0.55,
+    "smoothness": 0.8,
+    "orbit_angle": 360,
+    "distance": 3.5,
+    "height": 1.5,
+    "path_type": "arc",
+    "framing": "stable",
+    "preset": null,
+    "fragment": "",
+    "applied_to_prompt": false
+  },
+  "seed": 1234,
+  "fps": 24,
+  "frames": 73,
+  "resolution": "352x640",
+  "orientation": "portrait",
+  "guidance_scale": 4.0,
+  "sampling": {
+    "seed": 1234,
+    "control_after_generate": "fixed",
+    "steps": 32,
+    "cfg": 4.0,
+    "guidance_scale": 4.0,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1.0,
+    "unsupported_by_backend": []
+  },
+  "sampler_backend": {
+    "selected_render_backend": "direct",
+    "effective_render_backend": "direct",
+    "requested_sampler_name": "euler",
+    "effective_sampler_name": "euler",
+    "fallback_policy": "block",
+    "fallback_applied": false,
+    "routed_to_comfyui": false,
+    "generation_started": true,
+    "blocked_reason": null,
+    "direct_backend_supported": true,
+    "comfyui_backend_supported": true,
+    "status": "ok",
+    "effective_scheduler": "flow-matching (Euler)",
+    "requested_scheduler": "simple"
+  },
+  "model_sampling": {
+    "requested": {
+      "enabled": true,
+      "type": "sd3",
+      "shift": 8.0
+    },
+    "effective": {
+      "enabled": true,
+      "type": "sd3",
+      "shift": 8.0
+    },
+    "applied": true,
+    "applied_before_sampling": true,
+    "backend": "direct",
+    "auto_flow_shift": 5.0,
+    "effective_flow_shift": 8.0,
+    "warnings": []
+  },
+  "vram_cleanup": {
+    "after_generation": {
+      "reason": "job_completed:30d9127b6381",
+      "gc_collect": true,
+      "cuda_available": true,
+      "empty_cache": true,
+      "ipc_collect": true,
+      "models_unloaded": false,
+      "before_allocated_mb": 9.13,
+      "before_reserved_mb": 24.0,
+      "after_allocated_mb": 9.13,
+      "after_reserved_mb": 24.0,
+      "freed_allocated_mb": 0.0,
+      "freed_reserved_mb": 0.0,
+      "errors": []
+    }
+  },
+  "wan_preset": {
+    "preset": "wan22_5b_safe_quality",
+    "requested": {
+      "wan_preset": "wan22_5b_safe_quality",
+      "resolution": {
+        "width": 480,
+        "height": 832
+      },
+      "frames": 81,
+      "fps": 16,
+      "steps": 32,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "guidance_scale": 4.0,
+      "denoise": 1.0,
+      "model_sampling": {
+        "enabled": true,
+        "type": "sd3",
+        "shift": 5.0
+      },
+      "offload_policy": "balanced",
+      "unload_model_after_generation": false,
+      "step_range": [
+        30,
+        40
+      ],
+      "cfg_range": [
+        3.5,
+        4.5
+      ],
+      "warning": null
+    },
+    "effective": {
+      "resolution": {
+        "width": 352,
+        "height": 640
+      },
+      "frames": 73,
+      "fps": 24,
+      "steps": 32,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "guidance_scale": 4.0,
+      "denoise": 1.0,
+      "model_sampling": {
+        "enabled": true,
+        "type": "sd3",
+        "shift": 8.0
+      }
+    },
+    "matches_preset": false
+  },
+  "quality_preset": "none",
+  "preset_notes": [],
+  "requested_settings": {
+    "mode": "image2video",
+    "model_bundle_id": "wan2.2_ti2v_5B_fp16.safetensors",
+    "prompt": "Cinematic realistic video of a beautiful fashion model walking slowly on the shoreline at sunset, on a quiet beach.\n\nThe woman is around 28-32 years old, elegant, Mediterranean beauty, long dark hair moved gently by the sea breeze, natural makeup, refined facial features, expressive eyes, graceful posture.\n\nShe walks barefoot on the wet sand near the waterline, with small waves gently touching her feet. Her movement is slow, natural and fluid, like a professional fashion editorial video. She looks relaxed and confident, occasionally glancing toward the horizon and then slightly toward the camera.\n\nShe wears a light elegant summer dress, soft fabric moving naturally with the wind, cinematic and tasteful, not provocative. The dress reflects the warm golden sunset light.\n\nThe beach is calm and atmospheric. The sun is low on the horizon, warm orange and pink sky, soft reflections on the wet sand, gentle sea waves, subtle wind, cinematic depth of field.\n\nCamera movement is slow and smooth, tracking shot from a medium distance, slightly low angle, following her as she walks along the shoreline. Realistic human anatomy, correct walking motion, stable face, stable body proportions, natural arms movement, realistic feet contact with wet sand.\n\nHigh quality cinematic lighting, realistic skin, natural shadows, elegant fashion film style, warm sunset atmosphere, photorealistic, smooth motion, 24 fps, shallow depth of field, soft lens flare, realistic beach environment.",
+    "negative_prompt": "bad anatomy, deformed body, distorted legs, broken legs, extra legs, extra arms, missing fingers, fused fingers, malformed hands, twisted feet, unnatural walking, sliding feet, floating body, unstable body, body jitter, face distortion, changing face, melting face, asymmetrical face, crossed eyes, bad eyes, blinking artifacts, unnatural smile, plastic skin, doll face, uncanny valley, unrealistic skin texture, low quality, blurry, noisy, pixelated, overexposed, underexposed, harsh shadows, bad lighting, bad perspective, distorted horizon, warped background, flickering, temporal inconsistency, camera shake, fast camera movement, sudden zoom, jump cuts, duplicated person, multiple bodies, crowd, text, logo, watermark, oversaturated colors, cartoon, anime, CGI, 3D render, low resolution, compression artifacts, nudity, vulgar pose, provocative pose",
+    "seed": 1234,
+    "steps": 32,
+    "cfg": 4.0,
+    "guidance_scale": 4.0,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1.0,
+    "resolution": "352x640",
+    "frames": 73,
+    "fps": 24,
+    "precision": "fp16",
+    "offload_policy": "balanced",
+    "quality_preset": "none",
+    "model_sampling_sd3": true,
+    "model_sampling_shift": 8.0
+  },
+  "effective_settings": {
+    "mode": "image2video",
+    "model_bundle_id": "wan2.2_ti2v_5B_fp16.safetensors",
+    "prompt": "Cinematic realistic video of a beautiful fashion model walking slowly on the shoreline at sunset, on a quiet beach.\n\nThe woman is around 28-32 years old, elegant, Mediterranean beauty, long dark hair moved gently by the sea breeze, natural makeup, refined facial features, expressive eyes, graceful posture.\n\nShe walks barefoot on the wet sand near the waterline, with small waves gently touching her feet. Her movement is slow, natural and fluid, like a professional fashion editorial video. She looks relaxed and confident, occasionally glancing toward the horizon and then slightly toward the camera.\n\nShe wears a light elegant summer dress, soft fabric moving naturally with the wind, cinematic and tasteful, not provocative. The dress reflects the warm golden sunset light.\n\nThe beach is calm and atmospheric. The sun is low on the horizon, warm orange and pink sky, soft reflections on the wet sand, gentle sea waves, subtle wind, cinematic depth of field.\n\nCamera movement is slow and smooth, tracking shot from a medium distance, slightly low angle, following her as she walks along the shoreline. Realistic human anatomy, correct walking motion, stable face, stable body proportions, natural arms movement, realistic feet contact with wet sand.\n\nHigh quality cinematic lighting, realistic skin, natural shadows, elegant fashion film style, warm sunset atmosphere, photorealistic, smooth motion, 24 fps, shallow depth of field, soft lens flare, realistic beach environment.",
+    "negative_prompt": "bad anatomy, deformed body, distorted legs, broken legs, extra legs, extra arms, missing fingers, fused fingers, malformed hands, twisted feet, unnatural walking, sliding feet, floating body, unstable body, body jitter, face distortion, changing face, melting face, asymmetrical face, crossed eyes, bad eyes, blinking artifacts, unnatural smile, plastic skin, doll face, uncanny valley, unrealistic skin texture, low quality, blurry, noisy, pixelated, overexposed, underexposed, harsh shadows, bad lighting, bad perspective, distorted horizon, warped background, flickering, temporal inconsistency, camera shake, fast camera movement, sudden zoom, jump cuts, duplicated person, multiple bodies, crowd, text, logo, watermark, oversaturated colors, cartoon, anime, CGI, 3D render, low resolution, compression artifacts, nudity, vulgar pose, provocative pose",
+    "seed": 1234,
+    "steps": 32,
+    "cfg": 4.0,
+    "guidance_scale": 4.0,
+    "sampler_name": "euler",
+    "scheduler": "flow-matching (Euler)",
+    "denoise": 1.0,
+    "resolution": "352x640",
+    "frames": 73,
+    "fps": 24,
+    "precision": "fp16",
+    "offload_policy": "balanced",
+    "requested_sampler_name": "euler",
+    "requested_scheduler": "simple",
+    "requested_denoise": 1.0,
+    "model_sampling_sd3": true,
+    "model_sampling_shift": 8.0,
+    "flow_shift": 8.0
+  },
+  "device_map": {
+    "diffusion_model": "cuda (offloaded)",
+    "text_encoder": "cuda (offloaded)",
+    "vae": "cuda (offloaded)"
+  },
+  "dtype_map": {
+    "diffusion_model": "fp16",
+    "text_encoder": "fp16",
+    "vae": "fp32"
+  },
+  "timings": {
+    "model_loading_seconds": 11.689,
+    "text_encoding_seconds": 0.0,
+    "image_encoding_seconds": 54.845,
+    "sampling_seconds": 164.796,
+    "vae_decode_seconds": 34.272,
+    "video_write_seconds": 2.33,
+    "total_seconds": 268.472
+  },
+  "gpu_memory": {
+    "before_mb": 0.0,
+    "after_load_mb": 0.0,
+    "peak_mb": 15983.1,
+    "after_cleanup_mb": 9.1
+  },
+  "image_preprocessing": {
+    "source_width": 1122,
+    "source_height": 1402,
+    "target_width": 352,
+    "target_height": 640,
+    "resize_mode": "cover",
+    "crop_mode": "center",
+    "aspect_ratio_mode": "preserve (cover-crop)",
+    "effective_conditioning_size": "352x640",
+    "resampling": "LANCZOS",
+    "note": "The source is scaled to cover the target and center-cropped. ComfyUI's WanImageToVideo node may pad/letterbox instead — if your ComfyUI result differs, match the crop/pad mode there."
+  },
+  "final_positive_prompt": "Cinematic realistic video of a beautiful fashion model walking slowly on the shoreline at sunset, on a quiet beach.\n\nThe woman is around 28-32 years old, elegant, Mediterranean beauty, long dark hair moved gently by the sea breeze, natural makeup, refined facial features, expressive eyes, graceful posture.\n\nShe walks barefoot on the wet sand near the waterline, with small waves gently touching her feet. Her movement is slow, natural and fluid, like a professional fashion editorial video. She looks relaxed and confident, occasionally glancing toward the horizon and then slightly toward the camera.\n\nShe wears a light elegant summer dress, soft fabric moving naturally with the wind, cinematic and tasteful, not provocative. The dress reflects the warm golden sunset light.\n\nThe beach is calm and atmospheric. The sun is low on the horizon, warm orange and pink sky, soft reflections on the wet sand, gentle sea waves, subtle wind, cinematic depth of field.\n\nCamera movement is slow and smooth, tracking shot from a medium distance, slightly low angle, following her as she walks along the shoreline. Realistic human anatomy, correct walking motion, stable face, stable body proportions, natural arms movement, realistic feet contact with wet sand.\n\nHigh quality cinematic lighting, realistic skin, natural shadows, elegant fashion film style, warm sunset atmosphere, photorealistic, smooth motion, 24 fps, shallow depth of field, soft lens flare, realistic beach environment.",
+  "final_negative_prompt": "bad anatomy, deformed body, distorted legs, broken legs, extra legs, extra arms, missing fingers, fused fingers, malformed hands, twisted feet, unnatural walking, sliding feet, floating body, unstable body, body jitter, face distortion, changing face, melting face, asymmetrical face, crossed eyes, bad eyes, blinking artifacts, unnatural smile, plastic skin, doll face, uncanny valley, unrealistic skin texture, low quality, blurry, noisy, pixelated, overexposed, underexposed, harsh shadows, bad lighting, bad perspective, distorted horizon, warped background, flickering, temporal inconsistency, camera shake, fast camera movement, sudden zoom, jump cuts, duplicated person, multiple bodies, crowd, text, logo, watermark, oversaturated colors, cartoon, anime, CGI, 3D render, low resolution, compression artifacts, nudity, vulgar pose, provocative pose",
+  "warnings": [
+    "The text encoder file is stored in FP8 on disk ('umt5_xxl_fp8_e4m3fn_scaled.safetensors') and is dequantized to fp16 on load — this is expected and matches ComfyUI's fp8-scaled behavior, but the compute is not done in FP8.",
+    "The VAE runs in fp32 for decode stability/quality, independent of the fp16 compute precision (this matches Wan's reference recipe)."
+  ],
+  "motion_strength": 0.7,
+  "image_influence": 1.0,
+  "advanced_parameters": {
+    "steps": 32,
+    "sampler": "euler",
+    "precision": "fp16",
+    "memory_optimization": true,
+    "device": "cuda",
+    "model_offload": false,
+    "cache_latents": false,
+    "preview_frames": false,
+    "save_intermediate_frames": false,
+    "output_codec": "h264",
+    "offload_policy": "balanced",
+    "unload_model_after_generation": false
+  },
+  "source_image": "source_image.png",
+  "output_file": "BeachVideo_0024_fx.mp4",
+  "output_format": "mp4",
+  "duration_seconds": 3.0416666666666665,
+  "requested_duration_seconds": 3.042,
+  "actual_duration_seconds": 3.0416666666666665,
+  "backend": "wan",
+  "mock_generation": false,
+  "created_at": "2026-07-07T06:50:03.572464+00:00",
+  "video_effects_applied": true,
+  "video_effects": {
+    "enabled": true,
+    "saturation": 0.7,
+    "contrast": 0.95,
+    "hue": 0.0,
+    "temperature": -56.0,
+    "shadows": 2.0,
+    "highlights": 0.0,
+    "brightness": 0.0,
+    "gamma": 1.25,
+    "vignette": {
+      "enabled": false,
+      "intensity": 0.9,
+      "radius": 0.7,
+      "softness": 0.8
+    },
+    "film_grain": {
+      "enabled": true,
+      "intensity": 0.15,
+      "grain_size": 0.15,
+      "animated": true
+    },
+    "sharpness": {
+      "enabled": false,
+      "amount": 1.0
+    },
+    "vhs_effect": {
+      "enabled": true,
+      "intensity": 0.5,
+      "scanlines": 0.5,
+      "chromatic_aberration": 0.8,
+      "noise": 0.5,
+      "jitter": 0.1,
+      "tracking_distortion": 0.1,
+      "color_bleeding": 0.4,
+      "tape_damage": 0.85
+    }
+  },
+  "raw_output_file": "BeachVideo_0024.mp4",
+  "final_output_file": "BeachVideo_0024_fx.mp4",
+  "effects_applied_at": "2026-07-07T06:50:20.145133+00:00"
+}

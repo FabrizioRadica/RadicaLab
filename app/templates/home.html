@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% set page_title = "Project Editor" %}
+{% set page_subtitle = current_project.name if current_project else "No project open — create one to start" %}
+
+{% block content %}
+{% if not current_project %}
+<div class="empty-state" style="max-width:560px;margin:60px auto;">
+  <div style="font-size:40px;margin-bottom:10px;">🎬</div>
+  <h2>Welcome to {{ app_name }}</h2>
+  <p class="muted">Create your first video generation project to get started.</p>
+  <button class="btn btn-primary" onclick="WVG.openWizard()">＋ New Project</button>
+</div>
+{% else %}
+<div class="editor-grid" id="editor" data-project-id="{{ current_project.id }}">
+  <div class="editor-col">
+    {% include "partials/prompt_panel.html" %}
+    {% include "partials/generation_params.html" %}
+  </div>
+  <div class="editor-col">
+  
+	<!-- DEBUG!!!! -->
+    <!-- {% include "partials/camera_motion_panel.html" %} --> 
+    {% if video_effects_enabled %}{% include "partials/video_effects_panel.html" %}{% endif %}
+    {% if audio_tracks_enabled %}{% include "partials/audio_tracks_panel.html" %}{% endif %}
+  </div>
+  <div class="editor-col">
+    {% include "partials/preview_panel.html" %}
+  </div>
+  <div class="editor-col editor-col-library">
+    {% include "partials/project_library_panel.html" %}
+  </div>
+</div>
+
+<script type="application/json" id="project-data">{{ current_project_json | tojson }}</script>
+<script type="application/json" id="models-data">{{ models | tojson }}</script>
+<script type="application/json" id="camera-options">{{ camera_options | tojson }}</script>
+{% endif %}
+
+{% include "partials/new_project_modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/project.js"></script>
+{% if current_project %}
+<script src="/static/js/uploads.js"></script>
+<script src="/static/js/camera_motion.js"></script>
+<script src="/static/js/generation.js"></script>
+<script src="/static/js/audio_tracks.js"></script>
+<script src="/static/js/video_effects.js"></script>
+{% endif %}
+{% endblock %}

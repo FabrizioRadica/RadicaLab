@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% set page_title = "Projects" %}
+{% set page_subtitle = (projects | length) ~ " project(s)" %}
+{% block title %}Projects — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-toolbar">
+  <input type="search" id="projects-search" placeholder="Search projects…" oninput="WVG.filterCards('projects-grid', this.value)">
+  <select id="projects-mode-filter" style="max-width:170px;" onchange="WVG.filterCardsByMode('projects-grid', this.value)">
+    <option value="">All modes</option>
+    <option value="text2video">Text2Video</option>
+    <option value="image2video">Image2Video</option>
+  </select>
+  <div style="flex:1"></div>
+  <button class="btn btn-primary" onclick="WVG.openWizard()">＋ New Project</button>
+</div>
+
+{% if projects %}
+<div class="cards-grid" id="projects-grid">
+  {% for p in projects %}
+  <div class="media-card" data-name="{{ p.name | lower }} {{ p.tags | join(' ') | lower }}" data-mode="{{ p.generation_mode }}">
+    <div class="thumb" style="cursor:pointer;" onclick="window.location='/?project={{ p.id }}'">
+      {% if p.thumbnail %}<img src="{{ p.thumbnail }}" alt="">{% else %}🎬{% endif %}
+      <span class="mock-flag badge badge-accent">{{ "T2V" if p.generation_mode == "text2video" else "I2V" }}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-title">{{ p.name }}</div>
+      <div class="card-meta">
+        {{ p.resolution }} · {{ p.frames }} frames · {{ p.fps }} fps · {{ p.video_count }} video(s)<br>
+        Created {{ p.created_at[:10] }} · Updated {{ p.updated_at[:10] }}
+        {% if p.description %}<br>{{ p.description | truncate(70) }}{% endif %}
+      </div>
+    </div>
+    <div class="card-actions">
+      <button class="btn btn-sm" onclick="window.location='/?project={{ p.id }}'">Open</button>
+      <button class="btn btn-sm" onclick="WVG.duplicateProject('{{ p.id }}')">Duplicate</button>
+      <button class="btn btn-sm" onclick="WVG.openProjectFolder('{{ p.id }}')">Folder</button>
+      <button class="btn btn-sm" onclick="WVG.projectDetails('{{ p.id }}')">Details</button>
+      <button class="btn btn-sm btn-danger" onclick="WVG.deleteProject('{{ p.id }}', '{{ p.name | e }}')">Delete</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No projects yet.</p>
+  <button class="btn btn-primary" onclick="WVG.openWizard()">＋ Create your first project</button>
+</div>
+{% endif %}
+
+{% include "partials/new_project_modal.html" %}
+
+<div class="modal-backdrop" id="details-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Project details</h2>
+      <button class="btn btn-icon" onclick="WVG.closeModal('details-backdrop')">✕</button>
+    </div>
+    <div class="modal-body">
+      <pre class="mono" id="details-json" style="white-space:pre-wrap;word-break:break-word;margin:0;"></pre>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/project.js"></script>
+{% endblock %}

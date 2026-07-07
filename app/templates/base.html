@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="application-name" content="{{ app_name }}">
+  <meta name="author" content="{{ credits_concept }} — {{ credits_project }}">
+  <meta name="description" content="{{ app_name }} — AI video generation studio for Wan2.2+. Concept &amp; Design: {{ credits_concept }}. Project by {{ credits_project }}.">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="icon" href="/static/img/logo_placeholder.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/camera_motion.css">
+</head>
+<body>
+  <div class="app-shell">
+    {% include "partials/sidebar.html" %}
+    <div class="main-col">
+      {% include "partials/topbar.html" %}
+      <main class="page-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <div id="toast-container"></div>
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/system_monitor.js"></script>
+  <script src="/static/js/generation_progress.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

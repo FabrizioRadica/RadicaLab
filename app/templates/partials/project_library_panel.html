@@ -1,0 +1,48 @@
+<div class="panel" id="library-panel">
+  <div class="panel-header">
+    <h2>Project Library</h2>
+    <a class="btn btn-icon" href="/projects" title="All projects">⧉</a>
+  </div>
+  <div class="field">
+    <input type="search" id="library-search" placeholder="Search projects…">
+  </div>
+  <div id="library-list">
+    {% for p in projects %}
+    <div class="mini-card {{ 'active' if current_project and p.id == current_project.id }}" data-name="{{ p.name | lower }}"
+         onclick="window.location='/?project={{ p.id }}'">
+      <div class="mini-thumb">
+        {% if p.thumbnail %}<img src="{{ p.thumbnail }}" alt="">{% else %}▶{% endif %}
+      </div>
+      <div class="mini-info">
+        <div class="mini-title">{{ p.name }}</div>
+        <div class="mini-meta">
+          {{ "Text2Video" if p.generation_mode == "text2video" else "Image2Video" }}<br>
+          {{ p.resolution }} · {{ p.frames }}f · {{ p.fps }}fps
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="small muted">No projects yet.</p>
+    {% endfor %}
+  </div>
+
+  {% if current_project and current_project.generated_videos %}
+  <hr class="divider">
+  <div class="panel-header"><h2>Generated Videos</h2><span class="hint">{{ current_project.generated_videos | length }}</span></div>
+  <div id="project-videos">
+    {% for v in current_project.generated_videos | reverse %}
+    <div class="mini-card" onclick="WVGGen.showOutput('{{ v.filename }}', '{{ v.preview or '' }}')">
+      <div class="mini-thumb">
+        {% if v.preview %}<img src="/media/projects/{{ current_project.id }}/previews/{{ v.preview }}" alt="">{% else %}▶{% endif %}
+      </div>
+      <div class="mini-info">
+        <div class="mini-title">{{ v.filename }}</div>
+        <div class="mini-meta">{{ v.resolution }} · {{ v.frames }}f · {{ v.fps }}fps{% if v.is_mock %} · <span class="badge badge-accent" style="font-size:9px;">MOCK</span>{% endif %}{% if v.has_audio %} · <span class="badge badge-audio" style="font-size:9px;">♫</span>{% endif %}{% if v.has_effects %} · <span class="badge badge-fx" style="font-size:9px;">✨</span>{% endif %}</div>
+      </div>
+      <button class="btn btn-icon btn-danger mini-delete" title="Delete this generated video"
+              onclick="event.stopPropagation(); WVG.deleteVideo('{{ current_project.id }}', '{{ v.filename | e }}', function () { window.location.reload(); })">🗑</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>

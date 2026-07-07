@@ -1,0 +1,237 @@
+<div class="panel" id="params-panel">
+  <div class="panel-header">
+    <h2>Generation Parameters</h2>
+    <span class="hint" id="model-vram-hint"></span>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-model">Model</label>
+    <select id="f-model"></select>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-wan-preset">Wan 2.2 5B Preset</label>
+    <select id="f-wan-preset">
+      <option value="manual">Manual — my own settings</option>
+    </select>
+    <div class="small" id="wan-preset-profile" style="margin-top:3px;display:none;"></div>
+    <div class="small muted" id="wan-preset-recommend" style="margin-top:3px;"></div>
+    <div class="small" id="wan-preset-changes" style="display:none;margin-top:6px;padding:8px;border-radius:6px;background:rgba(255,255,255,0.03);"></div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label class="field-label" for="f-resolution">Resolution</label>
+      <select id="f-resolution"></select>
+    </div>
+    <div class="field" style="max-width:120px;">
+      <label class="field-label" for="f-orientation">Orientation</label>
+      <select id="f-orientation">
+        <option value="landscape">Landscape</option>
+        <option value="portrait">Portrait</option>
+        <option value="square">Square</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field-row" id="custom-res-row" style="display:none;">
+    <div class="field">
+      <label class="field-label" for="f-width">Width</label>
+      <input type="number" id="f-width" min="16" max="8192" step="8">
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-height">Height</label>
+      <input type="number" id="f-height" min="16" max="8192" step="8">
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Duration</label>
+    <div class="duration-presets" id="duration-presets">
+      <button type="button" class="duration-btn" data-seconds="2">2s</button>
+      <button type="button" class="duration-btn" data-seconds="3">3s</button>
+      <button type="button" class="duration-btn" data-seconds="5">5s</button>
+      <button type="button" class="duration-btn" data-seconds="10">10s</button>
+      <button type="button" class="duration-btn" data-seconds="custom">Custom</button>
+    </div>
+    <div class="duration-estimate">Estimated length: <strong id="duration-estimate">—</strong></div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label class="field-label" for="f-frames">Frames</label>
+      <input type="number" id="f-frames" min="1" max="1000">
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-fps">FPS</label>
+      <input type="number" id="f-fps" min="1" max="120">
+    </div>
+  </div>
+  <div class="small" id="manual-heavy-warning" style="display:none;color:var(--warning);margin:-4px 0 8px;"></div>
+
+  <div class="field">
+    <label class="field-label" for="f-seed">Seed</label>
+    <div class="field-row" style="align-items:center;">
+      <input type="number" id="f-seed" min="-1" style="flex:1;">
+      <label class="toggle" title="Use a random seed for every generation">
+        <input type="checkbox" id="f-random-seed">
+        <span class="track"></span>
+        <span>Random</span>
+      </label>
+    </div>
+    <div class="small muted" style="margin-top:3px;">-1 = random seed</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-control-after">Control after generate</label>
+    <select id="f-control-after">
+      <option value="fixed">Fixed</option>
+      <option value="randomize">Randomize</option>
+      <option value="increment">Increment</option>
+      <option value="decrement">Decrement</option>
+    </select>
+    <div class="small muted" style="margin-top:3px;">How the seed changes after each generation (ComfyUI-compatible)</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-guidance">CFG / Guidance Scale</label>
+    <div class="slider-row">
+      <input type="range" id="f-guidance" min="0" max="20" step="0.5" value="6">
+      <span class="slider-value" id="v-guidance">6.0</span>
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field" style="max-width:110px;">
+      <label class="field-label" for="f-steps">Steps</label>
+      <input type="number" id="f-steps" min="1" max="200">
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-sampler">Sampler</label>
+      <select id="f-sampler">
+        <option value="euler">euler</option>
+        <option value="euler_ancestral">euler_ancestral</option>
+        <option value="heun">heun</option>
+        <option value="dpm_2">dpm_2</option>
+        <option value="dpm_2_ancestral">dpm_2_ancestral</option>
+        <option value="lms">lms</option>
+        <option value="dpm_fast">dpm_fast</option>
+        <option value="dpm_adaptive">dpm_adaptive</option>
+        <option value="dpmpp_2m">dpmpp_2m</option>
+        <option value="dpmpp_sde">dpmpp_sde</option>
+        <option value="dpmpp_2m_sde">dpmpp_2m_sde</option>
+        <option value="ddim">ddim</option>
+        <option value="uni_pc">uni_pc</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-scheduler">Scheduler</label>
+      <select id="f-scheduler">
+        <option value="simple">simple</option>
+        <option value="normal">normal</option>
+        <option value="karras">karras</option>
+        <option value="exponential">exponential</option>
+        <option value="sgm_uniform">sgm_uniform</option>
+        <option value="beta">beta</option>
+        <option value="ddim_uniform">ddim_uniform</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-denoise">Denoise</label>
+    <div class="slider-row">
+      <input type="range" id="f-denoise" min="0" max="1" step="0.01" value="1">
+      <span class="slider-value" id="v-denoise">1.00</span>
+    </div>
+    <div class="small muted" style="margin-top:3px;">Denoise is not CFG, Motion Strength or Image Influence. For Image2Video it controls how much the source image may be transformed.</div>
+  </div>
+
+  <div class="small" id="sampling-compat-warning" style="display:none;color:var(--warning);margin:-4px 0 10px;"></div>
+
+  <div class="field">
+    <label class="field-label" for="f-motion">Motion Strength</label>
+    <div class="slider-row">
+      <input type="range" id="f-motion" min="0" max="1" step="0.05" value="0.7">
+      <span class="slider-value" id="v-motion">0.70</span>
+    </div>
+  </div>
+
+  <div class="field" id="i2v-influence-block" style="display:none;">
+    <label class="field-label" for="f-influence">Image influence</label>
+    <div class="slider-row">
+      <input type="range" id="f-influence" min="0" max="1" step="0.05" value="0.85">
+      <span class="slider-value" id="v-influence">0.85</span>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-quality-preset">Quality preset</label>
+    <select id="f-quality-preset">
+      <option value="none">None — use my parameters exactly</option>
+      <option value="comfyui_match">ComfyUI Match — prioritize parity</option>
+      <option value="high_quality">High Quality — prioritize visual quality</option>
+    </select>
+    <div class="small muted" style="margin-top:3px;" id="quality-preset-hint">
+      Presets never silently override your parameters — every change is shown in the job log and Backend Diagnostics.
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="f-format">Output format</label>
+    <select id="f-format">
+      <option value="mp4">MP4</option>
+      <option value="webm">WebM</option>
+    </select>
+  </div>
+
+  <details class="collapsible" id="advanced-params">
+    <summary>Advanced settings</summary>
+
+    <div class="subsection" id="model-sampling-block">
+      <div class="subsection-title">Model Sampling</div>
+      <label class="toggle" title="Apply ModelSamplingSD3 between model loading and sampling — can significantly change/improve quality (same as the ComfyUI ModelSamplingSD3 node).">
+        <input type="checkbox" id="f-model-sampling-enabled">
+        <span class="track"></span>
+        <span>Enable ModelSamplingSD3</span>
+      </label>
+      <div class="field" id="model-sampling-shift-field" style="margin-top:8px;">
+        <label class="field-label" for="f-model-sampling-shift">Shift</label>
+        <div class="slider-row">
+          <input type="range" id="f-model-sampling-shift" min="0" max="20" step="0.1" value="8">
+          <input type="number" id="f-model-sampling-shift-num" min="0" max="100" step="0.1" value="8.00" style="width:80px;">
+        </div>
+        <div class="small muted" style="margin-top:3px;">
+          Flow-matching sigma shift applied to the model before sampling. Independent from CFG, denoise, motion strength and image influence. Default 8.0.
+        </div>
+      </div>
+      <div class="small" id="model-sampling-status" style="display:none;margin-top:6px;"></div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="f-precision">Precision</label>
+        <select id="f-precision">
+          <option value="bf16">bf16</option>
+          <option value="fp16">fp16</option>
+          <option value="fp32">fp32</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="f-device">Device</label>
+        <select id="f-device">
+          <option value="cuda">CUDA (GPU)</option>
+          <option value="cpu">CPU</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="display:flex;flex-direction:column;gap:8px;">
+      <label class="toggle"><input type="checkbox" id="f-memopt"><span class="track"></span><span>Memory optimization</span></label>
+      <label class="toggle"><input type="checkbox" id="f-offload"><span class="track"></span><span>Model offload</span></label>
+      <label class="toggle"><input type="checkbox" id="f-save-frames"><span class="track"></span><span>Save intermediate frames</span></label>
+      <label class="toggle" title="Free model weights from VRAM after each render (slower next render, lower idle VRAM). Recommended for Low VRAM machines.">
+        <input type="checkbox" id="f-unload-after-gen"><span class="track"></span><span>Unload model after generation</span>
+      </label>
+    </div>
+  </details>
+</div>
