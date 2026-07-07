@@ -16,6 +16,9 @@ The UI is fully server-rendered with **Jinja2 + vanilla JavaScript** — no Node
 
 <img width="1276" height="638" alt="Screenshot 2026-07-07 121606" src="https://github.com/user-attachments/assets/8aa1b455-90fa-45ad-9602-cd108db66d2e" />
 
+<img width="2542" height="1393" alt="immagine" src="https://github.com/user-attachments/assets/50e3efd3-9359-47b6-9231-38b04aec5491" />
+
+
 ---
 
 ## Features
