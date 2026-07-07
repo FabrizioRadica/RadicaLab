@@ -482,12 +482,14 @@ def resolve_clip_settings(seq: VideoSequence, clip: SequenceClip) -> dict:
         "denoise": pick("denoise", g.denoise),
         "seed_mode": seed_mode,
         "seed": seed,
+        "control_after_generate": getattr(g, "control_after_generate", "fixed"),
         "model_sampling_enabled": g.model_sampling_enabled,
         "model_sampling_shift": pick("model_sampling_shift", g.model_sampling_shift),
         "precision": g.precision,
         "device": g.device,
         "memory_optimization": g.memory_optimization,
         "model_offload": g.model_offload,
+        "save_intermediate_frames": getattr(g, "save_intermediate_frames", False),
         "unload_model_after_generation": g.unload_model_after_generation,
         "negative_prompt": neg,
         "wan_preset": g.wan_preset,
@@ -532,6 +534,7 @@ def build_clip_project(seq: VideoSequence, clip: SequenceClip) -> tuple[Project,
         sampler_name=s["sampler_name"],
         scheduler=s["scheduler"],
         denoise=s["denoise"],
+        control_after_generate=s.get("control_after_generate", "fixed"),
         output_format="mp4",
     )
     params.advanced.steps = s["steps"]
@@ -539,6 +542,7 @@ def build_clip_project(seq: VideoSequence, clip: SequenceClip) -> tuple[Project,
     params.advanced.device = s["device"]
     params.advanced.memory_optimization = s["memory_optimization"]
     params.advanced.model_offload = s["model_offload"]
+    params.advanced.save_intermediate_frames = s.get("save_intermediate_frames", False)
     params.advanced.unload_model_after_generation = s["unload_model_after_generation"]
     params.model_sampling.enabled = s["model_sampling_enabled"]
     params.model_sampling.shift = s["model_sampling_shift"]

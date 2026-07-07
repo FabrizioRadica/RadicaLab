@@ -416,48 +416,65 @@ def heavy_preset_warning(target: dict) -> dict | None:
     return None
 
 
-def preset_changes(project, preset_id: str) -> dict:
-    """Compute a preset's target values, a human-readable diff vs the project's
-    current settings, and any model/preset mismatch or heavy-render warnings
-    (patch8 §3 + patchoptimization §7). Never applies anything."""
+def preset_changes_core(preset_id: str, mode: str, orientation: str,
+                        model_profile: str, current: dict) -> dict:
+    """Preset target values + a human-readable diff against an arbitrary current
+    settings dict + model/preset warnings (patch8 §3 + patchoptimization §7).
+
+    This is the single preset code path (patchSeq §9): Single Clip
+    (`preset_changes`) and the VideoSequenceQueue Global/Clip Generation
+    Parameters both call it, so a preset fix applies to both automatically.
+
+    `current` uses the canonical flat keys the Generation Parameters module
+    speaks: width, height, frames, fps, steps, sampler_name, scheduler,
+    guidance_scale, denoise, model_sampling_enabled, model_sampling_shift,
+    offload_policy, unload_model_after_generation. Missing keys are treated as
+    unknown and simply skipped in the diff. Never applies anything."""
     pid = normalize_preset(preset_id)
-    mode = project.generation_mode.value
-    orientation = project.orientation.value
     target = compute_preset(pid, mode, orientation)
-    model_profile = detect_profile_for_project(project)
     if target is None:
         return {"preset": MANUAL, "target": None, "changes": [], "warning": None,
                 "warnings": [], "requires_confirmation": False,
                 "detected_model_profile": model_profile, "preset_profile": "manual"}
 
-    p = project.params
+    current = current or {}
     changes: list[str] = []
 
     def _chg(label, old, new, fmt=str):
+        if old is None:
+            return
         if str(old) != str(new):
             changes.append(f"{label} {fmt(old)} → {fmt(new)}")
 
-    cur_res = f"{project.resolution.width}x{project.resolution.height}"
-    new_res = f"{target['resolution']['width']}x{target['resolution']['height']}"
-    _chg("Resolution", cur_res, new_res)
-    _chg("Frames", p.frames, target["frames"])
-    _chg("FPS", p.fps, target["fps"])
-    _chg("Steps", p.advanced.steps, target["steps"])
-    _chg("Sampler", p.sampler_name, target["sampler_name"])
-    _chg("Scheduler", p.scheduler, target["scheduler"])
-    _chg("CFG", f"{p.guidance_scale:.1f}", f"{target['guidance_scale']:.1f}")
-    _chg("Denoise", f"{p.denoise:.2f}", f"{target['denoise']:.2f}")
+    cur_w, cur_h = current.get("width"), current.get("height")
+    if cur_w is not None and cur_h is not None:
+        _chg("Resolution", f"{cur_w}x{cur_h}",
+             f"{target['resolution']['width']}x{target['resolution']['height']}")
+    _chg("Frames", current.get("frames"), target["frames"])
+    _chg("FPS", current.get("fps"), target["fps"])
+    _chg("Steps", current.get("steps"), target["steps"])
+    _chg("Sampler", current.get("sampler_name"), target["sampler_name"])
+    _chg("Scheduler", current.get("scheduler"), target["scheduler"])
+    if current.get("guidance_scale") is not None:
+        _chg("CFG", f"{float(current['guidance_scale']):.1f}",
+             f"{target['guidance_scale']:.1f}")
+    if current.get("denoise") is not None:
+        _chg("Denoise", f"{float(current['denoise']):.2f}",
+             f"{target['denoise']:.2f}")
 
     ms = target["model_sampling"]
-    if not p.model_sampling.enabled and ms["enabled"]:
+    cur_ms_enabled = bool(current.get("model_sampling_enabled"))
+    cur_ms_shift = current.get("model_sampling_shift")
+    if not cur_ms_enabled and ms["enabled"]:
         changes.append("ModelSamplingSD3 enabled")
-    if abs(p.model_sampling.shift - ms["shift"]) > 1e-6 or not p.model_sampling.enabled:
+    if (cur_ms_shift is None or abs(float(cur_ms_shift) - ms["shift"]) > 1e-6
+            or not cur_ms_enabled):
         changes.append(f"ModelSamplingSD3 shift set to {ms['shift']:.1f} "
                        f"({'I2V' if mode == 'image2video' else 'T2V'})")
-    _chg("Offload policy", getattr(p.advanced, "offload_policy", "") or "(env default)",
+    _chg("Offload policy", current.get("offload_policy") or "(env default)",
          target["offload_policy"] or "(env default)")
-    if target["unload_model_after_generation"] and not getattr(
-            p.advanced, "unload_model_after_generation", False):
+    if target["unload_model_after_generation"] and not current.get(
+            "unload_model_after_generation", False):
         changes.append("Unload model after generation enabled")
 
     warnings: list[dict] = []
@@ -476,6 +493,31 @@ def preset_changes(project, preset_id: str) -> dict:
             "requires_confirmation": requires_confirmation,
             "detected_model_profile": model_profile,
             "preset_profile": target.get("profile", PROFILE_NORMAL)}
+
+
+def preset_changes(project, preset_id: str) -> dict:
+    """Single Clip preset preview — builds the canonical `current` dict from the
+    project and delegates to the shared `preset_changes_core` (patchSeq §9)."""
+    p = project.params
+    current = {
+        "width": project.resolution.width,
+        "height": project.resolution.height,
+        "frames": p.frames,
+        "fps": p.fps,
+        "steps": p.advanced.steps,
+        "sampler_name": p.sampler_name,
+        "scheduler": p.scheduler,
+        "guidance_scale": p.guidance_scale,
+        "denoise": p.denoise,
+        "model_sampling_enabled": p.model_sampling.enabled,
+        "model_sampling_shift": p.model_sampling.shift,
+        "offload_policy": getattr(p.advanced, "offload_policy", ""),
+        "unload_model_after_generation": getattr(
+            p.advanced, "unload_model_after_generation", False),
+    }
+    return preset_changes_core(
+        preset_id, project.generation_mode.value, project.orientation.value,
+        detect_profile_for_project(project), current)
 
 
 def recommend_preset(vram_gb: float | None, profile: str | None = None) -> dict:

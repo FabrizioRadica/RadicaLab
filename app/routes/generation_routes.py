@@ -124,6 +124,33 @@ async def api_preset_preview(request: Request):
     return preset_service.preset_changes(project, preset_id)
 
 
+@router.post("/api/presets/compute")
+async def api_preset_compute(payload: dict):
+    """Compute a preset's target values + change summary against an arbitrary
+    settings state — NOT a saved project (patchSeq §9). The VideoSequenceQueue
+    Global/Clip Generation Parameters use this so preset logic, profile detection
+    and Turbo warnings are shared with Single Clip's `/api/presets/preview`.
+
+    Payload: {preset_id, mode, orientation, model_id?, current?} where `current`
+    is the canonical flat settings dict (width/height/frames/fps/steps/...)."""
+    from app.services import model_service, preset_service
+
+    preset_id = payload.get("preset_id", "manual")
+    mode = payload.get("mode", "text2video")
+    orientation = payload.get("orientation", "landscape")
+    model_id = payload.get("model_id") or ""
+    current = payload.get("current") or {}
+
+    profile = preset_service.PROFILE_UNKNOWN
+    if model_id:
+        try:
+            bundle = model_service.get_model(model_id).component_snapshot()
+            profile = preset_service.detect_wan_speed_profile(bundle)
+        except model_service.ModelError:
+            profile = preset_service.PROFILE_UNKNOWN
+    return preset_service.preset_changes_core(preset_id, mode, orientation, profile, current)
+
+
 @router.post("/api/generate")
 async def api_generate(payload: dict):
     project_id = payload.get("project_id", "")

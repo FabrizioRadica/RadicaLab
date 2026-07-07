@@ -13,7 +13,7 @@ window.WVG = window.WVG || {};
     });
   }
 
-  var S = { seq: null, models: [], poll: null, editing: null };
+  var S = { seq: null, models: [], poll: null, editing: null, gpGlobal: null, gpClip: null };
 
   var STATUS_LABEL = {
     ready: "Ready", queued: "Queued", rendering: "Rendering…", completed: "Completed",
@@ -113,47 +113,32 @@ window.WVG = window.WVG || {};
     renderStatus(s.render_state, s);
   }
 
-  function renderGlobalGen() {
-    var g = S.seq.global_generation_settings;
-    var sel = el("seq-g-model");
-    sel.innerHTML = "";
-    S.models.forEach(function (m) {
-      var o = document.createElement("option");
-      o.value = m.id; o.textContent = m.display_name + (m.status !== "ok" ? " [" + m.status + "]" : "");
-      sel.appendChild(o);
+  /* Global Generation Parameters: the SAME shared module used by Single Clip,
+     mounted in the "sequence_global" context (patchSeq §3/§5/§7). */
+  function ensureGlobalModule() {
+    if (S.gpGlobal) return S.gpGlobal;
+    var root = document.querySelector('[data-generation-parameters="sequence_global"]');
+    if (!root || !window.WVGGenParams) return null;
+    S.gpGlobal = WVGGenParams.mount(root, {
+      context: "sequence_global",
+      models: S.models,
+      getMode: function () { return "text2video"; },
+      onChange: function () { saveSettings(); },
     });
-    sel.value = g.model_id || (S.models[0] && S.models[0].id) || "";
-    var map = { "seq-g-width": "width", "seq-g-height": "height", "seq-g-frames": "frames",
-      "seq-g-fps": "fps", "seq-g-steps": "steps", "seq-g-cfg": "guidance_scale",
-      "seq-g-denoise": "denoise", "seq-g-seed": "seed", "seq-g-shift": "model_sampling_shift" };
-    Object.keys(map).forEach(function (id) { if (el(id)) el(id).value = g[map[id]]; });
-    el("seq-g-orientation").value = g.orientation;
-    el("seq-g-sampler").value = g.sampler_name;
-    el("seq-g-scheduler").value = g.scheduler;
-    el("seq-g-seedmode").value = g.seed_mode;
-    el("seq-g-ms-enabled").checked = !!g.model_sampling_enabled;
-    el("seq-g-negative").value = g.negative_prompt || "";
-    el("seq-g-memopt").checked = !!g.memory_optimization;
-    el("seq-g-offload").checked = !!g.model_offload;
-    el("seq-g-unload").checked = !!g.unload_model_after_generation;
+    return S.gpGlobal;
+  }
+
+  function renderGlobalGen() {
+    var mod = ensureGlobalModule();
+    if (mod) mod.hydrate(S.seq.global_generation_settings);
+    var neg = el("seq-g-negative");
+    if (neg) neg.value = S.seq.global_generation_settings.negative_prompt || "";
   }
 
   function collectGlobalGen() {
-    return {
-      model_id: el("seq-g-model").value,
-      width: +el("seq-g-width").value, height: +el("seq-g-height").value,
-      orientation: el("seq-g-orientation").value,
-      frames: +el("seq-g-frames").value, fps: +el("seq-g-fps").value,
-      steps: +el("seq-g-steps").value, guidance_scale: +el("seq-g-cfg").value,
-      sampler_name: el("seq-g-sampler").value, scheduler: el("seq-g-scheduler").value,
-      denoise: +el("seq-g-denoise").value, seed_mode: el("seq-g-seedmode").value,
-      seed: +el("seq-g-seed").value, model_sampling_enabled: el("seq-g-ms-enabled").checked,
-      model_sampling_shift: +el("seq-g-shift").value,
-      negative_prompt: el("seq-g-negative").value,
-      memory_optimization: el("seq-g-memopt").checked,
-      model_offload: el("seq-g-offload").checked,
-      unload_model_after_generation: el("seq-g-unload").checked,
-    };
+    var g = S.gpGlobal ? S.gpGlobal.collect() : {};
+    g.negative_prompt = (el("seq-g-negative") || {}).value || "";
+    return g;
   }
 
   var saveTimer = null;
@@ -288,15 +273,17 @@ window.WVG = window.WVG || {};
     el("clip-use-global").checked = !!clip.use_global_generation_settings;
     el("clip-look-mode").value = clip.color_look_mode;
     setClipType(clip.type);
-    // overrides
-    var o = clip.generation_overrides || {};
-    var omap = { "clip-o-width": "width", "clip-o-height": "height", "clip-o-frames": "frames",
-      "clip-o-fps": "fps", "clip-o-steps": "steps", "clip-o-cfg": "guidance_scale",
-      "clip-o-seed": "seed", "clip-o-shift": "model_sampling_shift" };
-    Object.keys(omap).forEach(function (id) { el(id).value = (o[omap[id]] == null ? "" : o[omap[id]]); });
-    el("clip-o-seedmode").value = o.seed_mode || "";
-    el("clip-o-sampler").value = o.sampler_name || "";
-    el("clip-o-scheduler").value = o.scheduler || "";
+    // Generation overrides use the SAME shared module in the
+    // "sequence_clip_override" context (patchSeq §12). Seed it with the global
+    // settings overlaid by any existing overrides so it shows real values.
+    var mod = ensureClipModule();
+    if (mod) {
+      var o = clip.generation_overrides || {};
+      var merged = Object.assign({}, S.seq.global_generation_settings);
+      Object.keys(o).forEach(function (k) { if (o[k] != null) merged[k] = o[k]; });
+      mod.hydrate(merged);
+    }
+    updateClipOverrideVisibility(!!clip.use_global_generation_settings);
     // image
     if (clip.source_image) {
       el("clip-image-preview").src = "/media/sequences/" + S.seq.sequence_id + "/asset/image/" + encodeURIComponent(clip.source_image);
@@ -323,33 +310,54 @@ window.WVG = window.WVG || {};
     S.editing.type = type;
   }
 
-  function collectOverride(id, isFloat) {
-    var v = el(id).value;
-    if (v === "" || v == null) return null;
-    return isFloat ? parseFloat(v) : parseInt(v, 10);
+  function ensureClipModule() {
+    if (S.gpClip) return S.gpClip;
+    var root = document.querySelector('[data-generation-parameters="sequence_clip_override"]');
+    if (!root || !window.WVGGenParams) return null;
+    S.gpClip = WVGGenParams.mount(root, {
+      context: "sequence_clip_override",
+      models: S.models,
+      getMode: function () {
+        return S.editing && S.editing.type === "image_reference" ? "image2video" : "text2video";
+      },
+      onChange: function () {},  // collected on Save
+    });
+    return S.gpClip;
+  }
+
+  function updateClipOverrideVisibility(useGlobal) {
+    var det = el("clip-overrides");
+    if (det) det.open = !useGlobal;
   }
 
   async function saveClip() {
     var sid = S.seq.sequence_id, cid = el("clip-edit-id").value;
+    var useGlobal = el("clip-use-global").checked;
+    // When overriding, collect the shared module and map to the per-clip
+    // override fields (a subset — model/precision/device always come from
+    // global). When using global, send an empty override object.
+    var overrides = {};
+    if (!useGlobal && S.gpClip) {
+      var c = S.gpClip.collect();
+      overrides = {
+        width: c.width, height: c.height, frames: c.frames, fps: c.fps,
+        steps: c.steps, guidance_scale: c.guidance_scale,
+        sampler_name: c.sampler_name, scheduler: c.scheduler, denoise: c.denoise,
+        seed_mode: c.seed_mode, seed: c.seed,
+        model_sampling_shift: c.model_sampling_shift,
+      };
+    }
     var body = {
       name: el("clip-name").value.trim(),
       type: S.editing.type,
       prompt: el("clip-prompt").value,
       negative_prompt: el("clip-negative").value,
       image_fit: el("clip-image-fit").value,
-      use_global_generation_settings: el("clip-use-global").checked,
+      use_global_generation_settings: useGlobal,
       color_look_mode: el("clip-look-mode").value,
       custom_color_look: S.editing.custom_color_look,
       source_image: S.editing.source_image || null,
-      generation_overrides: {
-        width: collectOverride("clip-o-width"), height: collectOverride("clip-o-height"),
-        frames: collectOverride("clip-o-frames"), fps: collectOverride("clip-o-fps"),
-        steps: collectOverride("clip-o-steps"), guidance_scale: collectOverride("clip-o-cfg", true),
-        seed: collectOverride("clip-o-seed"), model_sampling_shift: collectOverride("clip-o-shift", true),
-        seed_mode: el("clip-o-seedmode").value || null,
-        sampler_name: el("clip-o-sampler").value || null,
-        scheduler: el("clip-o-scheduler").value || null,
-      },
+      generation_overrides: overrides,
     };
     try {
       await WVG.api("/api/sequences/" + sid + "/clips/" + cid, { method: "PUT", body: body });
@@ -558,12 +566,16 @@ window.WVG = window.WVG || {};
     });
     el("seq-select").addEventListener("change", function () { selectSequence(el("seq-select").value); });
 
+    // Sequence orchestration fields + the global default negative prompt. The
+    // Global Generation Parameters module saves itself via its onChange handler.
     ["seq-name", "seq-output-mode", "seq-vram-mode", "seq-continue-on-error",
-     "seq-g-model", "seq-g-width", "seq-g-height", "seq-g-orientation", "seq-g-frames",
-     "seq-g-fps", "seq-g-steps", "seq-g-cfg", "seq-g-sampler", "seq-g-scheduler",
-     "seq-g-denoise", "seq-g-seedmode", "seq-g-seed", "seq-g-shift", "seq-g-ms-enabled",
-     "seq-g-negative", "seq-g-memopt", "seq-g-offload", "seq-g-unload"].forEach(function (id) {
+     "seq-g-negative"].forEach(function (id) {
       var e = el(id); if (e) e.addEventListener("change", saveSettings);
+    });
+
+    var useGlobal = el("clip-use-global");
+    if (useGlobal) useGlobal.addEventListener("change", function () {
+      updateClipOverrideVisibility(this.checked);
     });
 
     el("seq-add-image").addEventListener("click", function () { addClip("image_reference"); });
