@@ -525,6 +525,7 @@ window.WVG = window.WVG || {};
 
   function startPolling() {
     stopPolling();
+    S.wasRendering = true;
     S.poll = setInterval(async function () {
       if (!S.seq) return stopPolling();
       try {
@@ -532,7 +533,15 @@ window.WVG = window.WVG || {};
         applyStatus(st);
         if (!st.running && st.status !== "rendering" && st.status !== "stopping") {
           stopPolling();
+          var finalStatus = st.status;
           await selectSequence(S.seq.sequence_id);  // full refresh with outputs
+          // Reusable audio feedback on whole-sequence completion (patch §10.3.2).
+          if (S.wasRendering && finalStatus === "completed" && window.WVGAudioFeedback) {
+            WVGAudioFeedback.play_sequence_completed();
+          } else if (finalStatus === "failed" && window.WVGAudioFeedback) {
+            WVGAudioFeedback.play_error();
+          }
+          S.wasRendering = false;
         }
       } catch (e) { /* keep polling */ }
     }, 1200);
@@ -634,4 +643,16 @@ window.WVG = window.WVG || {};
   }
 
   document.addEventListener("DOMContentLoaded", bind);
+
+  // Refresh the queue when the AI Assistant populates the currently-open
+  // sequence (patch §9 — SequenceQueue stays the source of truth).
+  document.addEventListener("wvg:ai-sequence-populated", function (e) {
+    var id = e && e.detail && e.detail.sequence_id;
+    if (id && S.seq && S.seq.sequence_id === id) selectSequence(id);
+    else loadList(false);
+  });
+
+  // Let the AI Assistant target the open sequence when launched from this panel.
+  window.WVGSequence = window.WVGSequence || {};
+  window.WVGSequence.currentId = function () { return S.seq ? S.seq.sequence_id : null; };
 })(window.WVG);

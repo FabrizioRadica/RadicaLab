@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import logger, settings
 from app.routes import (
+    ai_assistant_routes,
     audio_routes,
     video_effects_routes,
     generation_routes,
@@ -61,6 +62,7 @@ app.include_router(library_routes.router)
 app.include_router(audio_routes.router)
 app.include_router(video_effects_routes.router)
 app.include_router(settings_routes.router)
+app.include_router(ai_assistant_routes.router)
 
 
 @app.exception_handler(Exception)

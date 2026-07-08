@@ -6,7 +6,7 @@
   "folder": "Test_01",
   "description": "",
   "created_at": "2026-07-07T13:56:56.426143+00:00",
-  "updated_at": "2026-07-07T14:09:15.710006+00:00",
+  "updated_at": "2026-07-07T14:37:49.031590+00:00",
   "global_generation_settings": {
     "model_id": "wan2.2_ti2v_5B_fp16.safetensors",
     "negative_prompt": "",
@@ -81,7 +81,7 @@
       "index": 0,
       "name": "Clip 01",
       "type": "image_reference",
-      "status": "rendering",
+      "status": "skipped",
       "source_image": "d7af7f68-a4cc-4c64-8ddd-3c09682a214c.png",
       "image_fit": "contain",
       "prompt": "Maintain the exact same face for the entire video.\n\nThe model must keep identical facial identity in every frame: same face shape, same eyes, same eye distance, same eyebrows, same nose, same lips, same mouth shape, same jawline, same cheekbones, same forehead, same skin texture and same facial proportions.\n\nDo not change her facial features during the animation. Her face must remain perfectly consistent from the first frame to the last frame.\n\nKeep the same expression throughout the shot: calm, elegant, slightly soft and natural expression. No exaggerated smile, no sudden emotional change, no different facial expression.\n\nThe mouth and lips must remain consistent: same lip shape, same lip volume, same mouth size, same closed relaxed mouth. Do not open the mouth, do not change the lips, do not alter the smile.\n\nThe eyebrows must remain identical: same shape, same thickness, same position, same expression. No eyebrow morphing, no asymmetry, no changing eyebrow angle.\n\nThe nose must remain identical: same shape, same size, same bridge, same tip, same nostrils. No nose morphing or facial structure changes.\n\nPreserve identity lock, facial consistency, temporal face coherence, stable facial features, same person, same model, same face, same expression, same lips, same nose, same eyebrows, same mouth.\n\nUse the reference image as strict identity reference. The face in the video must match the reference image exactly. Preserve the same facial proportions, expression, lips, nose, eyebrows, eyes and overall identity from the reference image.",

@@ -11,6 +11,7 @@
     <a class="nav-item" href="#s-performance" data-target="s-performance">⚡ Performance</a>
     <a class="nav-item" href="#s-paths" data-target="s-paths">📁 Paths</a>
     <a class="nav-item" href="#s-interface" data-target="s-interface">🖥 Interface</a>
+    <a class="nav-item" href="#s-ai-assistant" data-target="s-ai-assistant">🤖 AI Assistant</a>
     <a class="nav-item" href="#s-advanced" data-target="s-advanced">🛠 Advanced</a>
   </nav>
 
@@ -123,6 +124,8 @@
       </div>
     </div>
 
+    {% include "partials/ai_assistant_settings.html" %}
+
     <div class="panel" id="s-advanced">
       <div class="panel-header"><h2>Advanced</h2></div>
       <ul class="kv-list">
@@ -152,6 +155,7 @@
 
 {% block scripts %}
 <script src="/static/js/project.js"></script>
+<script src="/static/js/modules/ai_assistant_settings.js"></script>
 <script>
 (function () {
   document.querySelectorAll(".settings-nav .nav-item").forEach(function (item) {
