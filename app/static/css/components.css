@@ -653,3 +653,38 @@
 .seq-lib-card:hover { border-color: var(--accent); }
 .seq-lib-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .panel-subtle { border-top: 1px solid var(--border-soft); padding-top: 10px; }
+
+/* ============ AI Prompt Assistant (patch AIPromptAssistant) ============ */
+#ai-assistant-backdrop .mode-tabs { display: inline-flex; gap: 4px; }
+.ai-status-line { padding: 6px 10px; background: var(--panel-3); border: 1px solid var(--border-soft); border-radius: 8px; }
+.ai-seq-clip-list { display: flex; flex-direction: column; gap: 10px; max-height: min(46vh, 420px); overflow-y: auto; }
+.ai-seq-clip { border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px; background: var(--panel-2); display: flex; flex-direction: column; gap: 6px; }
+.ai-seq-clip-head { display: flex; align-items: center; gap: 8px; }
+.ai-seq-clip-head .ai-c-name { flex: 1; min-width: 0; }
+.ai-seq-clip textarea { width: 100%; resize: vertical; }
+#ai-open-single-clip, #ai-open-sequence { white-space: nowrap; }
+
+/* ============ Prompt Library (patch ProjectPromptLibrary) ============ */
+.pl-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.pl-toolbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pl-trash-toggle { margin: 0; }
+.pl-body { display: grid; grid-template-columns: 300px 1fr; gap: 14px; min-height: 340px; }
+.pl-list { border: 1px solid var(--border-soft); border-radius: 10px; padding: 6px; overflow-y: auto; max-height: min(56vh, 460px); background: var(--panel-3); }
+.pl-item { padding: 8px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+.pl-item:hover { background: var(--panel-2); }
+.pl-item.active { background: var(--accent-soft); border-color: rgba(124, 92, 250, 0.35); }
+.pl-item-title { font-weight: 600; font-size: 13px; }
+.pl-item-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.pl-tag { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--panel); border: 1px solid var(--border-soft); color: var(--muted); }
+.pl-preview { border: 1px solid var(--border-soft); border-radius: 10px; padding: 14px; overflow-y: auto; max-height: min(56vh, 460px); }
+.pl-preview-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.pl-preview-head h3 { margin: 0; }
+.pl-field { margin-bottom: 10px; }
+.pl-field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); margin-bottom: 3px; }
+.pl-text { white-space: pre-wrap; font-size: 13px; background: var(--panel-3); border: 1px solid var(--border-soft); border-radius: 8px; padding: 8px; }
+.pl-clip-list { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.pl-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.pl-manage { border-top: 1px solid var(--border-soft); padding-top: 10px; }
+.pl-footer { display: flex; align-items: center; justify-content: space-between; }
+.pl-footer-left { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 720px) { .pl-body { grid-template-columns: 1fr; } }

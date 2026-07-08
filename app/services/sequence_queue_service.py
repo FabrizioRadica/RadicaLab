@@ -51,6 +51,12 @@ class SequenceQueueManager:
             t = self._threads.get(sequence_id)
             return bool(t and t.is_alive())
 
+    def any_running(self) -> bool:
+        """True if ANY sequence is currently rendering — used by the AI resource
+        manager to block local LLM inference during a WAN render (patch §5)."""
+        with self._lock:
+            return any(t.is_alive() for t in self._threads.values())
+
     def start(self, sequence_id: str, clip_ids: list[str], do_merge: bool,
               force_ids: set[str] | None = None) -> None:
         if self.is_running(sequence_id):
