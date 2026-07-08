@@ -8,7 +8,7 @@ Concept & Design: Fabrizio Radica
 Project by RadicaDesign
 ```
 
-WanVideoGenerator is a professional, self-hosted **Python / FastAPI** web application that generates videos locally with **Wan 2.2 or later** through Hugging Face *diffusers*. It supports **Text2Video**, **Image2Video**, project management, real Wan backend diagnostics, post-processing Color & Look, multi-track audio mixing, ComfyUI workflow export, and a dedicated **VideoSequenceQueue** workflow for rendering several clips sequentially.
+WanVideoGenerator is a professional, self-hosted **Python / FastAPI** web application that generates videos locally with **Wan 2.2 or later** through Hugging Face *diffusers*. It supports **Text2Video**, **Image2Video**, project management, real Wan backend diagnostics, post-processing Color & Look, multi-track audio mixing, ComfyUI workflow export, a dedicated **VideoSequenceQueue** workflow for rendering several clips sequentially, and an optional **AI Prompt Assistant** that writes prompts and plans multi-clip sequences through a local or cloud LLM.
 
 The UI is fully server-rendered with **Jinja2 + vanilla JavaScript** — no Node.js, no build step, no frontend framework. Everything runs on your machine; nothing is uploaded anywhere.
 
@@ -25,6 +25,8 @@ The UI is fully server-rendered with **Jinja2 + vanilla JavaScript** — no Node
 
 - 🎬 **Real Wan 2.2+ generation** — Text2Video and Image2Video via diffusers `WanPipeline` / `WanImageToVideoPipeline`, with prompt, negative prompt, seed, frames, FPS, guidance scale, steps and resolution control.
 - 🧩 **VideoSequenceQueue** — a separate workflow next to Single Clip for building multiple ordered clips, rendering them sequentially, stopping/resuming from the current clip, reusing Color & Look and Audio Tracks, exporting separate clips, and optionally creating a merged final video.
+- ✨ **AI Prompt Assistant** — optional, provider-based assistant that generates positive/negative prompts for the current clip and plans multi-clip cinematic sequences that populate the existing VideoSequenceQueue. Supports **Ollama, LM Studio, OpenAI, Anthropic and DeepSeek**, releases local LLM VRAM/RAM after use, and never starts a render by itself.
+- 🔔 **Audio feedback** — reusable, synthesized (Web Audio) sound cues on clip completion, sequence completion, AI-populated sequences, warnings and errors — no audio asset files required, fully configurable.
 - 📦 **Model Bundle manager** — register local model files such as diffusion model/DiT, VAE, text encoder, tokenizer and LoRAs. Supports ComfyUI-repackaged single `.safetensors` files, fp8-scaled text encoders, and diffusers pipeline folders.
 - 🗂 **Project-based workflow** — every single clip project lives in a project folder with `source/`, `outputs/`, `previews/`, `metadata/`, `workflows/` and a portable `.wanproj` file.
 - 🧵 **Sequence projects** — sequence projects are saved separately from single clip projects and can be reloaded later to continue work. Each sequence stores clips, assets, outputs, global settings, per-clip overrides, Color & Look state, Audio Tracks and render state.
@@ -259,6 +261,135 @@ diagnostics
 ```
 
 Uploaded reference images and audio files are copied into the sequence project folder, not stored as temporary upload paths.
+
+---
+
+## What is new: AI Prompt Assistant
+
+The **AI Prompt Assistant** is an optional, modular layer that helps you write prompts and plan sequences using a language model of your choice. It is **disabled by default** and is enabled from **Settings → 🤖 AI Assistant**.
+
+It never renders anything. It only produces text and hands it to the existing systems:
+
+```text
+Single Clip Assistant   -> writes positive/negative prompts into the current clip fields
+Sequence Assistant      -> plans a multi-clip sequence and populates the existing VideoSequenceQueue
+```
+
+Rendering always stays an explicit user action. The assistant will never press Generate for you.
+
+### Providers
+
+The assistant is provider-based. It does not hardcode a single backend:
+
+```text
+Ollama      -> local  (default Base URL http://localhost:11434)
+LM Studio   -> local  (OpenAI-compatible, default http://localhost:1234/v1)
+OpenAI      -> cloud  (API key required)
+Anthropic   -> cloud  (API key required)
+DeepSeek    -> cloud  (API key required)
+```
+
+All provider calls are asynchronous and non-blocking. Errors (server unreachable, missing API key, bad model name, timeout, unparseable response) are shown clearly in the UI and never crash the app.
+
+### Single Clip Assistant
+
+Describe a scene (plus optional subject, style, camera movement, mood and environment) and the assistant returns:
+
+```text
+positive_prompt
+negative_prompt
+notes
+```
+
+You can regenerate only the positive or only the negative prompt, copy the result, and apply it to the current clip:
+
+```text
+Apply positive
+Apply negative
+Apply both
+```
+
+Existing prompt fields are not overwritten without confirmation unless **Auto-apply generated prompts** is enabled. The negative prompt targets common video-generation artifacts (bad anatomy, broken hands, flickering, identity drift, jitter, text, watermark, and so on).
+
+### Sequence Assistant
+
+Describe a film/sequence and set the number of clips, duration per clip, clip-type preference (Text2Video / Image2Video / infer) and continuity/identity requirements. The assistant returns a structured plan you can review and edit before adding:
+
+```text
+sequence_title
+global_style
+global_negative_prompt
+clips[]:
+  clip_name
+  clip_type (Text2Video / Image2Video)
+  positive_prompt
+  negative_prompt
+  duration_seconds
+  camera_notes / motion_notes / continuity_notes
+  image_reference_required
+```
+
+You edit clip names and prompts in the preview, then add them to a target sequence:
+
+```text
+Append to current SequenceQueue   (default)
+Replace current SequenceQueue
+```
+
+Clips are mapped onto the **existing** SequenceQueue clip model and saved through the existing sequence service — no parallel queue is created. Per-clip durations are converted to Wan-valid frame counts. Image2Video clips are added as image-reference clips; add a source image to them before rendering.
+
+### Resource management (protects WAN VRAM/RAM)
+
+Local LLMs consume RAM and sometimes VRAM that the Wan backend needs. The assistant is resource-aware:
+
+```text
+- After prompt/sequence generation it releases local LLM resources whenever the
+  provider technically supports it (Ollama unloads via keep_alive=0; LM Studio
+  is marked idle — no fake unload is ever invented).
+- By default it will NOT run local LLM inference while a WAN/video render is
+  active. This can be overridden in Settings (Allow local AI during render).
+- Cloud providers keep cleanup lightweight (no local VRAM to free).
+- Optional VRAM/RAM headroom warnings before local generation.
+```
+
+Resource cleanup is a **separate phase** from generation: a cleanup failure is reported as a non-blocking warning and never discards a successfully generated prompt or sequence.
+
+### Audio feedback
+
+A reusable **AudioFeedbackModule** plays short synthesized cues (Web Audio — no sound files shipped) for:
+
+```text
+single clip generation completed
+whole SequenceQueue completed
+AI finished populating a sequence
+warnings (optional)
+errors
+```
+
+Volume and each event can be toggled in Settings. Cleanup warnings do not trigger the error sound.
+
+### Configuration and persistence
+
+Assistant settings live in **Settings → 🤖 AI Assistant** and persist across restarts in a local `ai_assistant_config.json` file at the project root (the app's `.env` is read-only, so the assistant keeps its own writable config).
+
+```text
+Enable Prompt Assistant, default assistant mode, entry-point buttons
+Provider, model name, base URL, API key, temperature, max tokens, timeout,
+  system prompt override
+Resource management (release, block-during-render, warnings, thresholds, cooldown)
+Audio feedback (enable, volume, per-event toggles)
+```
+
+> ⚠ The provider **API key is stored in plain text** in `ai_assistant_config.json` (single-user local tool). It is never sent back to the browser (the Settings page shows only whether a key is saved). Do not use this on a shared machine with a key you cannot rotate.
+
+### Quick start: AI Prompt Assistant
+
+1. Open **Settings → 🤖 AI Assistant**.
+2. Enable the Prompt Assistant, pick a provider, set the model/Base URL (and API key for cloud providers).
+3. Click **Test connection**, then **Save AI Assistant settings**.
+4. In **Single Clip**, click **✨ Prompt Assistant**, describe the scene, **Generate prompts**, then **Apply**. Save the project as usual.
+5. In **VideoSequenceQueue**, click **✨ Sequence Assistant**, describe the sequence, **Generate sequence plan**, review/edit the clips, choose Append/Replace, and **Add clips to SequenceQueue**.
+6. Start the render yourself when ready — the assistant never renders automatically.
 
 ---
 
@@ -998,18 +1129,31 @@ app/
   main.py
   config.py
   routes/
+    ai_assistant_routes.py       # AI Prompt Assistant API (/api/ai-assistant/*)
   services/
     wan_backend.py
     generation_service.py
     model_service.py
     gpu_memory_service.py
     sequence_queue_service.py
+    ai_assistant/                # AI Prompt Assistant (providers, resource manager,
+      providers.py               #   prompt/plan services, SequenceQueue population)
+      resource_manager.py
+      prompt_service.py
+      parser.py
+      sequence_population_service.py
+      config_service.py
   models/
   templates/
   static/
+    js/modules/
+      ai_assistant.js            # assistant modal controller
+      ai_assistant_settings.js   # editable Settings section
+      audio_feedback.js          # reusable Web Audio feedback module
 projects/
 models/
 workflows/
+ai_assistant_config.json         # created on first save (assistant settings + API key)
 .env.example
 requirements.txt
 README.md
@@ -1131,6 +1275,20 @@ steps 4-6
 Euler / Simple
 I2V shift 5.0
 ```
+
+### AI Prompt Assistant issues
+
+If **Test connection** or **Generate prompts** fails:
+
+```text
+Provider is not reachable   -> check Base URL and that the local server (Ollama /
+                               LM Studio) is running, or the model name is pulled.
+API key is missing          -> set the key for OpenAI / Anthropic / DeepSeek.
+WAN render is running        -> local AI is blocked during render by default; wait,
+                               or enable "Allow local AI during render" in Settings.
+```
+
+A message like *"Prompt generated — AI resource cleanup reported a warning"* is **not** a failure: the prompts/sequence are kept, and only the local-LLM release step reported an issue. Rendering is unaffected.
 
 ### Video controls look clipped
 
